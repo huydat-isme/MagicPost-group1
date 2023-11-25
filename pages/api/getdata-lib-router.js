@@ -1,4 +1,4 @@
-import { query } from "../../DB/db";
+import { query } from "../app/DB/db";
 
 export default async function handler(req, res) {
   const id = req.body.id;
