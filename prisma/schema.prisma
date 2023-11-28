@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// schema.prisma
+
+// schema.prisma
+
+model User {
+  user_id             Int                  @id @default(autoincrement())
+  username            String
+  password            String
+  role                String
+  distributionPoints  DistributionPoint[]  @relation("ManagerId")
+  transactionPoints   TransactionPoint[]   @relation("TransactionManagerId")
+    @@map(name: "users")
+}
+
+model DistributionPoint {
+  distribution_point_id Int               @id @default(autoincrement())
+  point_name            String            @db.VarChar(225)
+  manager_id            Int               // Sửa từ user_id thành manager_id
+  manager               User              @relation("ManagerId", fields: [manager_id], references: [user_id])
+  transactionPoints     TransactionPoint[] @relation("TransactionDistributionPointId")
+   @@map(name: "distributionpoints")
+}
+
+model TransactionPoint {
+  point_id              Int               @id @default(autoincrement())
+  point_name            String            @db.VarChar(225)
+  manager_id            Int
+  distribution_point_id Int
+  manager               User              @relation("TransactionManagerId", fields: [manager_id], references: [user_id])
+  distributionPoint     DistributionPoint @relation("TransactionDistributionPointId", fields: [distribution_point_id], references: [distribution_point_id])
+@@map(name: "transactionpoints")
+  // Index
+  @@index([manager_id], name: "transaction_manager_idx")
+  @@index([distribution_point_id], name: "transaction_distribution_point_idx")
+}
+
