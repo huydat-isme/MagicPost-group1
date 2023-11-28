@@ -1,5 +1,6 @@
 import Image from "next/image";
 import styles from "@/app/ui/home.module.css";
+import Link from 'next/link';
 export default function Home() {
  return (
    <div>
@@ -148,8 +149,8 @@ export default function Home() {
            </ul>
          </div>
          <div className="navbar-end">
-           <a className="btn">Log in</a>
-           <a className="btn">Sign up</a>
+           <Link href = './login'><button className="btn">Log in</button></Link>
+           <button className="btn">Sign up</button>
          </div>
        </div>
      </header>
