@@ -1,0 +1,26 @@
+
+
+.lookup_postal{
+  background: #f5cc71;
+  padding: 50px 0;
+  margin-bottom: 70px;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right:  -15px;
+  margin-left:  10%;
+}
+.col_md_5 {
+  -ms-flex: 0 0 41.666667%;
+  flex: 0 0 41.666667%;
+  max-width: 41.666667%;
+}
+.highlight_service{
+  font-style: normal;
+    font-weight: 700;
+    font-size: 48px;
+    line-height: 72px;
+    margin-bottom: 55px;
+    text-align: center;
+}

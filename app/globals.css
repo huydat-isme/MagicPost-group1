@@ -25,3 +25,29 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+.list-service{
+margin-left:4%;
+margin-right:4%;
+  }
+.stat-value{
+  font-size: 24px;
+  color: #0072bc;
+}
+.see_another_service{
+  width: 255px;
+  display: inline-block;
+  padding: 13px 0;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+  color: #fff;
+  background: #f7941e;
+  border-radius: 5px;
+  border: none;
+  transition: all .5s;
+  text-align: center;
+  margin-left: 43%;
+  margin-top:20px;
+  
+
+}
