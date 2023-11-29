@@ -2,6 +2,7 @@ import Image from "next/image";
 import styles from "@/app/ui/home.module.css";
 import Link from "next/link";
 import Header from "@/app/header";
+import Footer from "@/app/footer";
 export default function Home() {
   return (
     <div>
@@ -203,6 +204,7 @@ export default function Home() {
         </div>
         <a className="see_another_service">Các dịch vụ khác</a>
       </div>
+      <Footer/>
     </div>
   );
 }
