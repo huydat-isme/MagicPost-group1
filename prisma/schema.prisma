@@ -18,6 +18,8 @@ model User {
   role                String
   distributionPoints  DistributionPoint[]  @relation("ManagerId")
   transactionPoints   TransactionPoint[]   @relation("TransactionManagerId")
+  sentTransactions     Transaction[]     @relation("SenderUser")
+  receivedTransactions Transaction[]     @relation("ReceiverUser")
     @@map(name: "users")
 }
 
@@ -37,9 +39,31 @@ model TransactionPoint {
   distribution_point_id Int
   manager               User              @relation("TransactionManagerId", fields: [manager_id], references: [user_id])
   distributionPoint     DistributionPoint @relation("TransactionDistributionPointId", fields: [distribution_point_id], references: [distribution_point_id])
+ senderTransactions    Transaction[]     @relation("SenderPoint")
+  receiverTransactions  Transaction[]     @relation("ReceiverPoint")
 @@map(name: "transactionpoints")
   // Index
   @@index([manager_id], name: "transaction_manager_idx")
   @@index([distribution_point_id], name: "transaction_distribution_point_idx")
+}
+model Transaction {
+  transaction_id       Int                @id @default(autoincrement())
+  sender_point_id      Int
+  receiver_point_id    Int
+  sender_user_id       Int
+  receiver_user_id     Int
+  package_status       String
+
+  senderPoint          TransactionPoint  @relation("SenderPoint", fields: [sender_point_id], references: [point_id])
+  receiverPoint        TransactionPoint  @relation("ReceiverPoint", fields: [receiver_point_id], references: [point_id])
+  sender               User              @relation("SenderUser", fields: [sender_user_id], references: [user_id])
+  receiver             User              @relation("ReceiverUser", fields: [receiver_user_id], references: [user_id])
+
+  @@map(name: "transactions")
+  // Index
+  @@index([sender_point_id], name: "sender_point_idx")
+  @@index([receiver_point_id], name: "receiver_point_idx")
+  @@index([sender_user_id], name: "sender_user_idx")
+  @@index([receiver_user_id], name: "receiver_user_idx")
 }
 
