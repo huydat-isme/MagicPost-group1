@@ -1,11 +1,11 @@
-// import the catchError middleware
+// Import middleware và các thư viện cần thiết
 import catchAsyncErrors from "../middleware/catchAsyncErrors";
 import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../lib/prisma"; // prisma client
+import prisma from "../lib/prisma";
 
-// route for fetching all distribution points
+// Hàm để lấy tất cả các điểm phân phối
 const getAllDistributionPoints = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResponse) => {
-  const distributionPoints = await prisma.distributionPoint.findMany()
+  const distributionPoints = await prisma.distributionPoint.findMany();
 
   res.status(200).json({
     status: "success",
@@ -15,13 +15,15 @@ const getAllDistributionPoints = catchAsyncErrors(async (req: NextApiRequest, re
   });
 });
 
-// route for creating a distribution point
+// Hàm để tạo một điểm phân phối mới
 const createDistributionPoint = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResponse) => {
-  const { point_name, manager_id } = req.body;
+  const { distribution_location_id, distribution_user_id, distribution_order_id } = req.body;
+
   const distributionPoint = await prisma.distributionPoint.create({
     data: {
-      point_name,
-      manager_id,
+      distribution_location_id,
+      distribution_user_id,
+      distribution_order_id,
     },
   });
 
@@ -31,12 +33,53 @@ const createDistributionPoint = catchAsyncErrors(async (req: NextApiRequest, res
   });
 });
 
-// route for deleting a distribution point using the id
+// Hàm để lấy một điểm phân phối cụ thể bằng cách sử dụng id
+const getDistributionPoint = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResponse) => {
+  const { id } = req.query;
+  const distributionPoint = await prisma.distributionPoint.findUnique({
+    where: {
+      id: Number(id),
+    },
+  });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      distributionPoint,
+    },
+  });
+});
+
+// Hàm để cập nhật một điểm phân phối bằng cách sử dụng id
+const updateDistributionPoint = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResponse) => {
+  const { id } = req.query;
+  const { distribution_location_id, distribution_user_id, distribution_order_id } = req.body;
+
+  const distributionPoint = await prisma.distributionPoint.update({
+    where: {
+      id: Number(id),
+    },
+    data: {
+      distribution_location_id,
+      distribution_user_id,
+      distribution_order_id,
+    },
+  });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      distributionPoint,
+    },
+  });
+});
+
+// Hàm để xóa một điểm phân phối bằng cách sử dụng id
 const deleteDistributionPoint = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
   await prisma.distributionPoint.delete({
     where: {
-      distribution_point_id: Number(id),
+      id: Number(id),
     },
   });
 
@@ -46,44 +89,11 @@ const deleteDistributionPoint = catchAsyncErrors(async (req: NextApiRequest, res
   });
 });
 
-// route for getting a specific distribution point using the id
-const getDistributionPoint = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResponse) => {
-  const { id } = req.query;
-  const distributionPoint = await prisma.distributionPoint.findUnique({
-    where: {
-      distribution_point_id: Number(id),
-    },
-  });
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      distributionPoint,
-    },
-  });
-});
-
-// route for updating a distribution point using the id
-const updateDistributionPoint = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResponse) => {
-  const { id } = req.query;
-  const { point_name,manager_id } = req.body;
-
-  const distributionPoint = await prisma.distributionPoint.update({
-    where: {
-      distribution_point_id: Number(id),
-    },
-    data: {
-      point_name,
-      manager_id,
-    },
-  });
-  res.status(200).json({
-    status: "success",
-    data: {
-      distributionPoint,
-    },
-  });
-});
-
-// export all routes to be used in the api/
-export { getAllDistributionPoints, createDistributionPoint, deleteDistributionPoint, updateDistributionPoint, getDistributionPoint };
+// Xuất tất cả các hàm để sử dụng trong api/
+export {
+  getAllDistributionPoints,
+  createDistributionPoint,
+  getDistributionPoint,
+  updateDistributionPoint,
+  deleteDistributionPoint,
+};

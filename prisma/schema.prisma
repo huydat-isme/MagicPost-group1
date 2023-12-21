@@ -10,60 +10,73 @@ datasource db {
 // schema.prisma
 
 // schema.prisma
+// schema.prisma
+model Location {
+  id        Int      @id @default(autoincrement())
+  province  String   @db.VarChar(255)
+  city      String   @db.VarChar(255)
+  gathering GatheringPoint[] 
+  distribution DistributionPoint[]
+  @@map(name: "location")
+}
 
-model User {
-  user_id             Int                  @id @default(autoincrement())
-  username            String
-  password            String
-  role                String
-  distributionPoints  DistributionPoint[]  @relation("ManagerId")
-  transactionPoints   TransactionPoint[]   @relation("TransactionManagerId")
-  sentTransactions     Transaction[]     @relation("SenderUser")
-  receivedTransactions Transaction[]     @relation("ReceiverUser")
-    @@map(name: "users")
+model Order {
+  order_id         Int               @id @default(autoincrement())
+  status           String            @db.VarChar(50)
+  comment          String?
+  sender_name      String            @db.VarChar(255)
+  sender_phone     String            @db.VarChar(20)  
+  sender_location  String            @db.VarChar(255)
+  receiver_name    String            @db.VarChar(255)
+  receiver_phone   String            @db.VarChar(20)
+  receiver_location String           @db.VarChar(255) 
+  code             String            @db.VarChar(20)
+  gathering        GatheringPoint[]
+  distribution     DistributionPoint[]
+  details          OrderDetail[]
+    @@map(name: "order")
+}
+
+model OrderDetail {
+  order_details_id Int     @id @default(autoincrement())
+  order_id         Int?
+  package_name     String  @db.VarChar(255)
+  quantity         Int
+  weight           Decimal @db.Decimal(10, 2)  
+  price            Decimal @db.Decimal(10, 2)
+  order            Order?  @relation(fields: [order_id], references: [order_id])
+  @@map(name: "order_details")
+}
+
+model GatheringPoint {
+  id                  Int       @id @default(autoincrement())
+  gathering_location   Location? @relation(fields: [gathering_location_id], references: [id])
+  gathering_location_id Int?
+  gathering_user        User?    @relation(fields: [gathering_user_id], references: [id]) 
+  gathering_user_id     Int?
+  gathering_order Order? @relation(fields: [gathering_order_id], references: [order_id])
+  gathering_order_id    Int?  
+  @@map(name: "gathering_point")
 }
 
 model DistributionPoint {
-  distribution_point_id Int               @id @default(autoincrement())
-  point_name            String            @db.VarChar(225)
-  manager_id            Int               // Sửa từ user_id thành manager_id
-  manager               User              @relation("ManagerId", fields: [manager_id], references: [user_id])
-  transactionPoints     TransactionPoint[] @relation("TransactionDistributionPointId")
-   @@map(name: "distributionpoints")
+  id                    Int       @id @default(autoincrement())
+  distribution_location   Location? @relation(fields: [distribution_location_id], references: [id])
+  distribution_location_id Int? 
+  distribution_user        User?    @relation(fields: [distribution_user_id], references: [id])
+  distribution_user_id     Int?
+  distribution_order Order? @relation(fields: [distribution_order_id], references: [order_id])   
+  distribution_order_id    Int?
+  @@map(name: "distribution_point")
 }
 
-model TransactionPoint {
-  point_id              Int               @id @default(autoincrement())
-  point_name            String            @db.VarChar(225)
-  manager_id            Int
-  distribution_point_id Int
-  manager               User              @relation("TransactionManagerId", fields: [manager_id], references: [user_id])
-  distributionPoint     DistributionPoint @relation("TransactionDistributionPointId", fields: [distribution_point_id], references: [distribution_point_id])
- senderTransactions    Transaction[]     @relation("SenderPoint")
-  receiverTransactions  Transaction[]     @relation("ReceiverPoint")
-@@map(name: "transactionpoints")
-  // Index
-  @@index([manager_id], name: "transaction_manager_idx")
-  @@index([distribution_point_id], name: "transaction_distribution_point_idx")
+model User {
+  id        Int    @id @default(autoincrement()) 
+  username  String @db.VarChar(255)
+  phone     String @db.VarChar(20)
+  password  String @db.VarChar(255)
+  role      String @db.VarChar(50)
+  gathering GatheringPoint[]
+  distribution DistributionPoint[]  
+  @@map(name: "user")
 }
-model Transaction {
-  transaction_id       Int                @id @default(autoincrement())
-  sender_point_id      Int
-  receiver_point_id    Int
-  sender_user_id       Int
-  receiver_user_id     Int
-  package_status       String
-
-  senderPoint          TransactionPoint  @relation("SenderPoint", fields: [sender_point_id], references: [point_id])
-  receiverPoint        TransactionPoint  @relation("ReceiverPoint", fields: [receiver_point_id], references: [point_id])
-  sender               User              @relation("SenderUser", fields: [sender_user_id], references: [user_id])
-  receiver             User              @relation("ReceiverUser", fields: [receiver_user_id], references: [user_id])
-
-  @@map(name: "transactions")
-  // Index
-  @@index([sender_point_id], name: "sender_point_idx")
-  @@index([receiver_point_id], name: "receiver_point_idx")
-  @@index([sender_user_id], name: "sender_user_idx")
-  @@index([receiver_user_id], name: "receiver_user_idx")
-}
-

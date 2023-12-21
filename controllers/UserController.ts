@@ -4,7 +4,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../lib/prisma"; // prisma client
 import bcrypt from 'bcrypt';
 
-
 const saltRounds = 10; 
 const getDefaultRole = () => "1";
 
@@ -22,11 +21,12 @@ const getAllUsers = catchAsyncErrors(async (req: NextApiRequest, res: NextApiRes
 
 // Hàm để tạo một người dùng mới
 const createUser = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResponse) => {
-  const { username, password, role } = req.body;
+  const { username, phone, password, role } = req.body;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
   const user = await prisma.user.create({
     data: {
       username,
+      phone,
       password: hashedPassword,
       role: getDefaultRole(),
     },
@@ -43,7 +43,7 @@ const deleteUser = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResp
   const { id } = req.query;
   await prisma.user.delete({
     where: {
-      user_id: Number(id),
+      id: Number(id),
     },
   });
 
@@ -58,7 +58,7 @@ const getUser = catchAsyncErrors(async (req: NextApiRequest, res: NextApiRespons
   const { id } = req.query;
   const user = await prisma.user.findUnique({
     where: {
-      user_id: Number(id),
+      id: Number(id),
     },
   });
 
@@ -73,14 +73,15 @@ const getUser = catchAsyncErrors(async (req: NextApiRequest, res: NextApiRespons
 // Hàm để cập nhật một người dùng bằng cách sử dụng id
 const updateUser = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
-  const { username, password, role } = req.body;
+  const { username, phone, password, role } = req.body;
 
   const user = await prisma.user.update({
     where: {
-      user_id: Number(id),
+      id: Number(id),
     },
     data: {
       username,
+      phone,
       password,
       role,
     },
