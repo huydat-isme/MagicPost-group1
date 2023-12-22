@@ -119,7 +119,7 @@ export default function DeliveryPackageForm() {
               ))}
             </div>
 
-            <button type="button" onClick={addItem}>
+            <button className="btn btn-outline btn-primary" type="button" onClick={addItem}>
               Thêm mặt hàng mới
             </button>
           </div>
