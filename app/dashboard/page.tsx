@@ -1,5 +1,9 @@
+'use client'
 import Header_dasboard from "./header_dashboard"
 import Footer_dashboard from "./footer_dashboard"
+import Delivery_form from "./delivery_user_form"
+import Delivery_package_form from "./delivery_package_form"
+
 export default function Dashboard(){
     return(
       
@@ -16,9 +20,6 @@ export default function Dashboard(){
                       <button className="btn-active"><svg
                         className="h-6 w-6"
                         fill="none"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
                       >
@@ -40,9 +41,6 @@ export default function Dashboard(){
                       <svg
                         className="h-6 w-6 text-gray-500"
                         fill="none"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
                       >
@@ -70,8 +68,12 @@ export default function Dashboard(){
               <h1 className="font-bold text-2xl text-gray-700">Dashboard</h1>
       
               <div
-                className="flex flex-col flex-grow border-4 border-gray-400 border-dashed bg-white rounded mt-4"
-              ></div>
+                className="flex  flex-grow border-4 border-gray-400 border-dashed bg-white rounded mt-4"
+              >
+      
+               <Delivery_form/>
+                <Delivery_package_form/>
+              </div>
             </div>
             <Footer_dashboard/>
           </main>

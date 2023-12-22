@@ -199,7 +199,7 @@ export default function Header_dasboard() {
                 <svg
                   fill="none"
                   
-                  stroke-width="2"
+                  strokeWidth="2"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                   className="h-6 w-6"
