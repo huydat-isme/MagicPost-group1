@@ -65,7 +65,7 @@ export default function Home() {
           <div className={styles.row}>
             <div className="stats stats-vertical lg:stats-horizontal shadow">
               <div className="stat">
-                <div className="stat-value">Tra cứu bưu gửi</div>
+                <div className="stat-value" id="targetText">Tra cứu bưu gửi</div>
                 <div className="stat-desc">
                   Mã bưu gửi (tra nhiều bill thêm dấu phẩy giữa các bill VD:
                   EB125966888VN, EI125556888VN)

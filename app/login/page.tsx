@@ -23,7 +23,7 @@ const newtab = () => {
                 </div>
                 <a href="#" className="text-xs text-gray-600 hover:underline hover:text-blue-600">Forget Password?</a>
                 <div>
-                    <Link href='./role'><button className="btn btn-block">Login</button></Link>
+                    <Link href='./dashboard'><button className="btn btn-block">Login</button></Link>
                 </div>
             </form>
         </div>
