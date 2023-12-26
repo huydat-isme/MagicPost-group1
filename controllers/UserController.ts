@@ -19,6 +19,40 @@ const getAllUsers = catchAsyncErrors(async (req: NextApiRequest, res: NextApiRes
   });
 });
 
+const checkUser = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResponse) => {
+  const { username, password } = req.body;
+
+  // Kiểm tra xem người dùng có tồn tại trong cơ sở dữ liệu hay không
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      username,
+    },
+  });
+
+  if (!existingUser) {
+    return res.status(404).json({
+      status: "error",
+      message: "User not found",
+    });
+  }
+
+  // So sánh mật khẩu đã hash
+  const passwordMatch = await bcrypt.compare(password, existingUser.password);
+
+  if (!passwordMatch) {
+    return res.status(401).json({
+      status: "error",
+      message: "Incorrect password",
+    });
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      user: existingUser,
+    },
+  });
+});
 // Hàm để tạo một người dùng mới
 const createUser = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResponse) => {
   const { username, phone, password, role } = req.body;
