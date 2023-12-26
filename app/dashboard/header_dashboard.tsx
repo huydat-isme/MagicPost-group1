@@ -1,5 +1,9 @@
 import { disconnect } from "process";
+<<<<<<< HEAD
 import Link from 'next/link';
+=======
+import Link from "next/link";
+>>>>>>> e5800f1 (update search)
 
 export default function Header_dasboard() {
     return (
@@ -34,7 +38,7 @@ export default function Header_dasboard() {
                   />
                 </svg>
               </span>
-              <span className="ml-3">Dashboard</span>
+             <Link href="./"><span className="ml-3">Dashboard</span></Link> 
             </a>
           </li>
           <li className="my-px">
@@ -79,7 +83,8 @@ export default function Header_dasboard() {
                   />
                 </svg>
               </span>
-              <span className="ml-3">Tra cứu</span>
+              <Link href="./dashboard/search"><span className="ml-3">Tra cứu</span></Link>
+              
             </a>
           </li>
           <li className="my-px">
