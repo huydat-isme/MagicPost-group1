@@ -38,8 +38,7 @@ export default function Dashboard(){
             </div>
             <Footer_dashboard/>
           </main>
-        </div>
-        
+        </div> 
        
     )
 }

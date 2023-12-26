@@ -75,7 +75,6 @@ export default function SearchPackage() {
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      stroke-width="2"
                       d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                     />
                   </svg>
@@ -90,26 +89,44 @@ export default function SearchPackage() {
               </div>
             </div>
             {showOrderTable && (
-          <table className="mt-4 border-collapse w-full">
-            <thead>
+          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th>Mã đơn hàng</th>
-                <th>Người gửi</th>
-                <th>Người nhận</th>
-                <th>Trạng thái đơn hàng</th>
+                  <th scope="col" className="px-6 py-3">
+                      Mã đơn hàng
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                      Người gửi
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                      Người nhận
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                     Trạng thái đơn hàng
+                  </th>
               </tr>
-            </thead>
-            <tbody>
-              {orderData.map((order) => (
-                <tr key={order.id}>
-                  <td>{order.code}</td>
-                  <td>{order.sender}</td>
-                  <td>{order.receiver}</td>
-                  <td>{order.status}</td>
-                </tr>
+          </thead>
+          <tbody>   {orderData.map((order) => (
+
+              <tr key = {order.id} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                  
+                  <td className="px-6 py-4">
+                      {order.code}
+                  </td>
+                  <td className="px-6 py-4">
+                      {order.sender}
+                  </td>
+                  <td className="px-6 py-4">
+                     {order.receiver}
+                  </td>
+                  <td className="px-6 py-4">
+                      <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">{order.status}</a>
+                  </td>
+              </tr>
+             
               ))}
-            </tbody>
-          </table>
+          </tbody>
+      </table>
         )}
           </div>
          

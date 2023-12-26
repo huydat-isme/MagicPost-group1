@@ -1,9 +1,7 @@
 import { disconnect } from "process";
-<<<<<<< HEAD
+
 import Link from 'next/link';
-=======
-import Link from "next/link";
->>>>>>> e5800f1 (update search)
+
 
 export default function Header_dasboard() {
     return (
@@ -21,9 +19,9 @@ export default function Header_dasboard() {
       <div className="sidebar-content px-4 py-6">
         <ul className="flex flex-col w-full">
           <li className="my-px">
-            <a
-              href="#"
-              className="flex flex-row items-center h-10 px-3 rounded-lg text-gray-700 bg-gray-100"
+            <Link
+              href="/dashboard"
+              className="flex flex-row items-center h-10 px-3 rounded-lg text-gray-300 "
             >
               <span className="flex items-center justify-center text-lg text-gray-400">
                 <svg
@@ -38,8 +36,8 @@ export default function Header_dasboard() {
                   />
                 </svg>
               </span>
-             <Link href="./"><span className="ml-3">Dashboard</span></Link> 
-            </a>
+             <span className="ml-3">Dashboard</span> 
+            </Link>
           </li>
           <li className="my-px">
             <span className="flex font-medium text-sm text-gray-300 px-4 my-4 uppercase">Projects</span>
@@ -66,8 +64,8 @@ export default function Header_dasboard() {
             </a>
           </li>
           <li className="my-px">
-            <a
-              href="#"
+            <Link
+              href="/dashboard/search"
               className="flex flex-row items-center h-10 px-3 rounded-lg text-gray-300 hover:bg-gray-100 hover:text-gray-700"
             >
               <span className="flex items-center justify-center text-lg text-gray-400">
@@ -83,9 +81,9 @@ export default function Header_dasboard() {
                   />
                 </svg>
               </span>
-              <Link href="./dashboard/search"><span className="ml-3">Tra cứu</span></Link>
+           <span className="ml-3">Tra cứu</span>
               
-            </a>
+            </Link>
           </li>
           <li className="my-px">
             <a
