@@ -80,3 +80,16 @@ model User {
   distribution DistributionPoint[]  
   @@map(name: "user")
 }
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  code        String   @db.VarChar(20)
+  color_status String?  @db.VarChar(10)
+  description String?
+  name        String   @db.VarChar(255)
+  pos         Int?     @db.Int
+  type        String?  @db.VarChar(50)
+  code_value   Int?     @db.Int
+
+  @@map("categories")
+}
