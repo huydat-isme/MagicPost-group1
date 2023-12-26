@@ -86,10 +86,9 @@ export default function Header_dasboard() {
             </Link>
           </li>
           <li className="my-px">
-            <a
-              href="./manage_employee"
-              className="flex flex-row items-center h-10 px-3 rounded-lg text-gray-300 hover:bg-gray-100 hover:text-gray-700"
-            >
+            <Link href="/dashboard/manage_employee"
+              className="flex flex-row items-center h-10 px-3 rounded-lg text-gray-300 hover:bg-gray-100 hover:text-gray-700">
+            
               <span className="flex items-center justify-center text-lg text-gray-400">
                 <svg
                   fill="none"
@@ -105,7 +104,7 @@ export default function Header_dasboard() {
               </span>
               <span className="ml-3"> Quản lý</span>
              
-            </a>
+              </Link>
           </li>
           <li className="my-px">
             <a

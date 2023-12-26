@@ -2,13 +2,13 @@
 "use client";
 import Link from 'next/link';
 import React, { useState }from 'react';
-import Header_dasboard from '../dashboard/header_dashboard';
+import Header_dasboard from '../header_dashboard';
 import Modal from 'react-modal';
 
 const manage = () => {
   const [data, setData] = useState([
-    { id: 1, name: 'Nguyen Van A', email: 'a@example.com', phone: '123456789', workplace: 'Company A' },
-    { id: 2, name: 'Tran Thi B', email: 'b@example.com', phone: '987654321', workplace: 'Company B' },
+    { id: 1, name: 'Nguyen Van A', email: 'a@example.com', phone: '123456789', workplace: 'Company A', role: 'Giám đốc' },
+    { id: 2, name: 'Tran Thi B', email: 'b@example.com', phone: '987654321', workplace: 'Company B', role: 'Nhân viên' },
     // Thêm các bản ghi khác nếu cần
   ]);
 
@@ -56,6 +56,7 @@ const manage = () => {
       email: '',
       phone: '',
       workplace: '',
+      role: 'Giám đốc',
     };
 
     // Mở modal với bản ghi mới
@@ -114,6 +115,7 @@ const manage = () => {
             <th className="py-2 px-4 border-b">Email</th>
             <th className="py-2 px-4 border-b">Phone</th>
             <th className="py-2 px-4 border-b">Workplace</th>
+            <th className="py-2 px-4 border-b">Role</th>
             <th className="py-2 px-4 border-b"></th>
           </tr>
         </thead>
@@ -124,6 +126,7 @@ const manage = () => {
               <td className="py-2 px-4 border-b">{item.email}</td>
               <td className="py-2 px-4 border-b">{item.phone}</td>
               <td className="py-2 px-4 border-b">{item.workplace}</td>
+              <td className="py-2 px-4 border-b">{item.role}</td>
               <td className="py-2 px-4 border-b">
                 <button
                   className="bg-blue-200 btn btn-xs"
@@ -146,7 +149,7 @@ const manage = () => {
         isOpen={modalIsOpen}
         onRequestClose={() => setModalIsOpen(false)}
         contentLabel="Edit Modal"
-        className="relative flex flex-col justify-center h-4/5 bg-gray-100 p-6 w-2/5 my-14 mx-auto"
+        className="relative flex flex-col justify-center h-4/5 bg-gray-100 p-6 w-1/3 my-14 mx-auto"
       >
         {editingMode ? (
           <>
@@ -156,7 +159,7 @@ const manage = () => {
         <h2>Name:</h2>
         </label>
         <input
-          className="input input-bordered w-full max-w-xl"
+          className="input input-bordered w-full"
           type="text"
           value={editedData.name}
           onChange={(e) => setEditedData({ ...editedData, name: e.target.value })}
@@ -168,7 +171,7 @@ const manage = () => {
         <h2>Email:</h2>
         </label>
         <input
-          className="input input-bordered w-full max-w-xl"
+          className="input input-bordered w-full"
           type="text"
           value={editedData.email}
           onChange={(e) => setEditedData({ ...editedData, email: e.target.value })}
@@ -180,7 +183,7 @@ const manage = () => {
         <h2>Phone:</h2>
         </label>
         <input
-          className="input input-bordered w-full max-w-xl"
+          className="input input-bordered w-full"
           type="text"
           value={editedData.phone}
           onChange={(e) => setEditedData({ ...editedData, phone: e.target.value })}
@@ -192,11 +195,24 @@ const manage = () => {
         <h2>Workplace:</h2>
         </label>
         <input
-          className="input input-bordered w-full max-w-xl"
+          className="input input-bordered w-full "
           type="text"
           value={editedData.workplace}
           onChange={(e) => setEditedData({ ...editedData, workplace: e.target.value })}
         />
+        
+        </div>
+        <div>
+        <label className="label">Chức Vụ:</label>
+            <select
+              value={editedData.role}
+              onChange={(e) => setEditedData({ ...editedData, role: e.target.value })}
+              className="input input-bordered w-full"
+            >
+              <option value="Giám đốc">Giám đốc</option>
+              <option value="Nhân viên">Nhân viên</option>
+              <option value="Trưởng phòng">Trưởng phòng</option>
+            </select>
         
         </div>
         
