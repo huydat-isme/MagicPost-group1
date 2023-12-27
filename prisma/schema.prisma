@@ -7,34 +7,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// schema.prisma
-
-// schema.prisma
-// schema.prisma
 model Location {
-  id        Int      @id @default(autoincrement())
-  province  String   @db.VarChar(255)
-  city      String   @db.VarChar(255)
-  gathering GatheringPoint[] 
+  id           Int                 @id @default(autoincrement())
+  province     String              @db.VarChar(255)
+  city         String              @db.VarChar(255)
   distribution DistributionPoint[]
-  @@map(name: "location")
+  gathering    GatheringPoint[]
+
+  @@map("location")
 }
 
 model Order {
-  order_id         Int               @id @default(autoincrement())
-  status           String            @db.VarChar(50)
-  comment          String?
-  sender_name      String            @db.VarChar(255)
-  sender_phone     String            @db.VarChar(20)  
-  sender_location  String            @db.VarChar(255)
-  receiver_name    String            @db.VarChar(255)
-  receiver_phone   String            @db.VarChar(20)
-  receiver_location String           @db.VarChar(255) 
-  code             String            @db.VarChar(20)
-  gathering        GatheringPoint[]
-  distribution     DistributionPoint[]
-  details          OrderDetail[]
-    @@map(name: "order")
+  order_id          Int                 @id @default(autoincrement())
+  status            String              @db.VarChar(50)
+  comment           String?             @db.Text
+  sender_name       String              @db.VarChar(255)
+  sender_phone      String              @db.VarChar(20)
+  sender_location   String              @db.VarChar(255)
+  receiver_name     String              @db.VarChar(255)
+  receiver_phone    String              @db.VarChar(20)
+  receiver_location String              @db.VarChar(255)
+  code              String              @db.VarChar(20)
+  distribution      DistributionPoint[]
+  gathering         GatheringPoint[]
+  details           OrderDetail[]
+
+  @@map("order")
 }
 
 model OrderDetail {
@@ -42,54 +40,65 @@ model OrderDetail {
   order_id         Int?
   package_name     String  @db.VarChar(255)
   quantity         Int
-  weight           Decimal @db.Decimal(10, 2)  
+  weight           Decimal @db.Decimal(10, 2)
   price            Decimal @db.Decimal(10, 2)
-  order            Order?  @relation(fields: [order_id], references: [order_id])
-  @@map(name: "order_details")
+  order            Order?  @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "order_details_ibfk_1")
+
+  @@index([order_id], map: "order_id")
+  @@map("order_details")
 }
 
 model GatheringPoint {
-  id                  Int       @id @default(autoincrement())
-  gathering_location   Location? @relation(fields: [gathering_location_id], references: [id])
+  id                    Int       @id @default(autoincrement())
   gathering_location_id Int?
-  gathering_user        User?    @relation(fields: [gathering_user_id], references: [id]) 
   gathering_user_id     Int?
-  gathering_order Order? @relation(fields: [gathering_order_id], references: [order_id])
-  gathering_order_id    Int?  
-  @@map(name: "gathering_point")
+  gathering_order_id    Int?
+  gathering_location    Location? @relation(fields: [gathering_location_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "gathering_point_ibfk_1")
+  gathering_user        User?     @relation(fields: [gathering_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "gathering_point_ibfk_2")
+  gathering_order       Order?    @relation(fields: [gathering_order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "gathering_point_ibfk_3")
+
+  @@index([gathering_location_id], map: "gathering_location_id")
+  @@index([gathering_order_id], map: "gathering_order_id")
+  @@index([gathering_user_id], map: "gathering_user_id")
+  @@map("gathering_point")
 }
 
 model DistributionPoint {
-  id                    Int       @id @default(autoincrement())
-  distribution_location   Location? @relation(fields: [distribution_location_id], references: [id])
-  distribution_location_id Int? 
-  distribution_user        User?    @relation(fields: [distribution_user_id], references: [id])
+  id                       Int       @id @default(autoincrement())
+  distribution_location_id Int?
   distribution_user_id     Int?
-  distribution_order Order? @relation(fields: [distribution_order_id], references: [order_id])   
   distribution_order_id    Int?
-  @@map(name: "distribution_point")
+  distribution_location    Location? @relation(fields: [distribution_location_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "distribution_point_ibfk_1")
+  distribution_user        User?     @relation(fields: [distribution_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "distribution_point_ibfk_2")
+  distribution_order       Order?    @relation(fields: [distribution_order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "distribution_point_ibfk_3")
+
+  @@index([distribution_location_id], map: "distribution_location_id")
+  @@index([distribution_order_id], map: "distribution_order_id")
+  @@index([distribution_user_id], map: "distribution_user_id")
+  @@map("distribution_point")
 }
 
 model User {
-  id        Int    @id @default(autoincrement()) 
-  username  String @db.VarChar(255)
-  phone     String @db.VarChar(20)
-  password  String @db.VarChar(255)
-  role      String @db.VarChar(50)
-  gathering GatheringPoint[]
-  distribution DistributionPoint[]  
-  @@map(name: "user")
+  id           Int                 @id @default(autoincrement())
+  username     String              @db.VarChar(255)
+  phone        String              @db.VarChar(20)
+  password     String              @db.VarChar(255)
+  role         String              @db.VarChar(50)
+  distribution DistributionPoint[]
+  gathering    GatheringPoint[]
+
+  @@map("user")
 }
 
 model Category {
-  id          Int      @id @default(autoincrement())
-  code        String   @db.VarChar(20)
-  color_status String?  @db.VarChar(10)
-  description String?
-  name        String   @db.VarChar(255)
-  pos         Int?     @db.Int
-  type        String?  @db.VarChar(50)
-  code_value   Int?     @db.Int
+  id           Int     @id @default(autoincrement())
+  code         String  @db.VarChar(20)
+  color_status String? @db.VarChar(10)
+  description  String? @db.Text
+  name         String  @db.VarChar(255)
+  pos          Int?
+  type         String? @db.VarChar(50)
+  code_value   Int?
 
   @@map("categories")
 }

@@ -1,7 +1,7 @@
 // newpage.js
 "use client";
 import Link from 'next/link';
-import React, { useState }from 'react';
+import React, { useEffect, useState }from 'react';
 import Header_dasboard from '../header_dashboard';
 import Modal from 'react-modal';
 
@@ -249,6 +249,8 @@ const manage = () => {
 };
 
 export default manage;
+
+
 
 
 
