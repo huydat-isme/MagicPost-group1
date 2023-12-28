@@ -1,9 +1,50 @@
+"use client"
 import Image from "next/image";
 import styles from "@/app/ui/home.module.css";
 import Link from "next/link";
 import Header from "@/app/header";
 import Footer from "@/app/footer";
+import React, { useState, useEffect } from "react";
 export default function Home() {
+  const [showOrderTable, setShowOrderTable] = useState(false);
+  const [orderData, setOrderData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  useEffect(() => {
+    // Fetch data from the API when the component mounts
+    fetch('/api/order/getall')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('API Data:', data);
+        // Assuming data is structured as { "status": "success", "data": { "orders": [...] } }
+        setOrderData(data.data.orders);
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  }, []); // Empty dependency array ensures the effect runs only once on mount
+  // Click event handler for the search button
+  const handleSearchButtonClick = () => {
+  // Perform search logic here
+  const searchValue = parseInt(searchQuery, 10);
+
+  if (!isNaN(searchValue)) {
+    // If searchQuery is a valid integer, filter orders
+    const filteredOrders = orderData.filter(order => order.order_id === searchValue);
+
+    // Set filtered orders to be displayed
+    setFilteredOrders(filteredOrders);
+  } else {
+    // Handle the case where searchQuery is not a valid integer (optional)
+    console.error('Invalid search value. Please enter a valid integer.');
+    // Optionally, you can clear the filtered orders here:
+    setFilteredOrders([]);
+  }
+};
+
   return (
     <div>
       {/* nav-bar */}
@@ -72,11 +113,13 @@ export default function Home() {
                 </div>
                 <span>
                   <input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                     type="text"
                     placeholder="Nhập mã đơn hàng ở đây"
                     className="input input-bordered w-full max-w-xs"
                   />
-                  <button type="submit" className="btn">
+                  <button type="submit"  onClick={handleSearchButtonClick} className="btn">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       height="1em"
@@ -120,9 +163,44 @@ export default function Home() {
                   </a>
                 </div>
               </div>
+              
             </div>
+            
           </div>
+          {filteredOrders.length > 0 &&  (
+          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+              <tr>
+                  <th scope="col" className="px-6 py-3">
+                      Mã đơn hàng
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                      Người gửi
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                      Người nhận
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                     Trạng thái đơn hàng
+                  </th>
+              </tr>
+          </thead>
+          <tbody>
+      {filteredOrders.map((order) => (
+        <tr key={order.order_id} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+          {/* Example columns, adjust as needed */}
+          <td className="px-6 py-4">{order.order_id}</td>
+          <td className="px-6 py-4">{order.sender_name}</td>
+          <td className="px-6 py-4">{order.receiver_name}</td>
+          <td className="px-6 py-4">{order.status}</td>
+          {/* ... (other columns) */}
+        </tr>
+      ))}
+    </tbody>
+      </table>
+        )}
         </div>
+        
       </div>
       <div className="list-service">
         <h1 className={styles.highlight_service}> Dịch vụ nổi bật </h1>

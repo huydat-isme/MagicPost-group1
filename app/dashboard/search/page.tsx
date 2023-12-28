@@ -1,36 +1,51 @@
 "use client"
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import Header_dasboard from "../header_dashboard";
 import Footer_dashboard from "../footer_dashboard";
+
 export default function SearchPackage() {
+  
   const [showOrderTable, setShowOrderTable] = useState(false);
-
-  // Dummy data for the order table (replace it with your actual data)
-  const orderData = [
-    {
-      id: 1,
-      code: "123",
-      sender: "Sender 1",
-      receiver: "Receiver 1",
-      status: "Pending",
-    },
-    {
-      id: 2,
-      code: "456",
-      sender: "Sender 2",
-      receiver: "Receiver 2",
-      status: "Delivered",
-    },
-    // Add more data as needed
-  ];
-
+  const [orderData, setOrderData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  useEffect(() => {
+    // Fetch data from the API when the component mounts
+    fetch('/api/order/getall')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('API Data:', data);
+        // Assuming data is structured as { "status": "success", "data": { "orders": [...] } }
+        setOrderData(data.data.orders);
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  }, []); // Empty dependency array ensures the effect runs only once on mount
   // Click event handler for the search button
   const handleSearchButtonClick = () => {
-    // Perform your search logic here
-    // For now, let's just toggle the visibility of the order table
-    setShowOrderTable(!showOrderTable);
-  };
+  // Perform search logic here
+  const searchValue = parseInt(searchQuery, 10);
 
+  if (!isNaN(searchValue)) {
+    // If searchQuery is a valid integer, filter orders
+    const filteredOrders = orderData.filter(order => order.order_id === searchValue);
+
+    // Set filtered orders to be displayed
+    setFilteredOrders(filteredOrders);
+  } else {
+    // Handle the case where searchQuery is not a valid integer (optional)
+    console.error('Invalid search value. Please enter a valid integer.');
+    // Optionally, you can clear the filtered orders here:
+    setFilteredOrders([]);
+  }
+};
+
+  
   return (
     <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
       <Header_dasboard />
@@ -81,14 +96,17 @@ export default function SearchPackage() {
                 </button>
 
                 <input
-                  className=" text-gray-700 pr-2 w-96 rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-1 sm:text-sm sm:leading-6"
-                  type="text"
-                  id="search"
-                  placeholder="Tra cứu đơn hàng"
-                />
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="text-gray-700 pr-2 w-96 rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-1 sm:text-sm sm:leading-6"
+            type="text"
+            id="search"
+            placeholder="Nhập mã đơn hàng"
+          />
+          
               </div>
             </div>
-            {showOrderTable && (
+            {filteredOrders.length > 0 &&  (
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
@@ -106,26 +124,18 @@ export default function SearchPackage() {
                   </th>
               </tr>
           </thead>
-          <tbody>   {orderData.map((order) => (
-
-              <tr key = {order.id} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                  
-                  <td className="px-6 py-4">
-                      {order.code}
-                  </td>
-                  <td className="px-6 py-4">
-                      {order.sender}
-                  </td>
-                  <td className="px-6 py-4">
-                     {order.receiver}
-                  </td>
-                  <td className="px-6 py-4">
-                      <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">{order.status}</a>
-                  </td>
-              </tr>
-             
-              ))}
-          </tbody>
+          <tbody>
+      {filteredOrders.map((order) => (
+        <tr key={order.order_id} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+          {/* Example columns, adjust as needed */}
+          <td className="px-6 py-4">{order.order_id}</td>
+          <td className="px-6 py-4">{order.sender_name}</td>
+          <td className="px-6 py-4">{order.receiver_name}</td>
+          <td className="px-6 py-4">{order.status}</td>
+          {/* ... (other columns) */}
+        </tr>
+      ))}
+    </tbody>
       </table>
         )}
           </div>
