@@ -6,6 +6,10 @@ import Header_dasboard from '../header_dashboard';
 import Modal from 'react-modal';
 
 const manage = () => {
+  fetch('/api/user/getall')
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error('Error:', error));
   const [data, setData] = useState([
     { id: 1, name: 'Nguyen Van A', email: 'a@example.com', phone: '123456789', workplace: 'Company A', role: 'Giám đốc' },
     { id: 2, name: 'Tran Thi B', email: 'b@example.com', phone: '987654321', workplace: 'Company B', role: 'Nhân viên' },
