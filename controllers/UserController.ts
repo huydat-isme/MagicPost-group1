@@ -135,4 +135,5 @@ export {
   deleteUser,
   updateUser,
   getUser,
+  checkUser,
 };
