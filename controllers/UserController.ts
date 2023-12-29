@@ -62,7 +62,7 @@ const createUser = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResp
       username,
       phone,
       password: hashedPassword,
-      role: getDefaultRole(),
+      role,
     },
   });
 

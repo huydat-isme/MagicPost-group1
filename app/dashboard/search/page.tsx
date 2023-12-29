@@ -7,44 +7,41 @@ import Footer_dashboard from "../footer_dashboard";
 export default function SearchPackage() {
   
   const [showOrderTable, setShowOrderTable] = useState(false);
-  const [orderData, setOrderData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredOrders, setFilteredOrders] = useState([]);
-  useEffect(() => {
-    // Fetch data from the API when the component mounts
-    fetch('/api/order/getall')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('API Data:', data);
-        // Assuming data is structured as { "status": "success", "data": { "orders": [...] } }
-        setOrderData(data.data.orders);
-      })
-      .catch(error => console.error('Error fetching data:', error));
-  }, []); // Empty dependency array ensures the effect runs only once on mount
-  // Click event handler for the search button
+
+  // Không cần state cho toàn bộ danh sách đơn hàng, chỉ cần state cho kết quả lọc
+  // const [orderData, setOrderData] = useState([]);
+
   const handleSearchButtonClick = () => {
-  // Perform search logic here
-  const searchValue = parseInt(searchQuery, 10);
-
-  if (!isNaN(searchValue)) {
-    // If searchQuery is a valid integer, filter orders
-    const filteredOrders = orderData.filter(order => order.order_id === searchValue);
-
-    // Set filtered orders to be displayed
-    setFilteredOrders(filteredOrders);
-  } else {
-    // Handle the case where searchQuery is not a valid integer (optional)
-    console.error('Invalid search value. Please enter a valid integer.');
-    // Optionally, you can clear the filtered orders here:
-    setFilteredOrders([]);
-  }
-};
-
+    const searchValue = searchQuery.trim();
+  
+    if (searchValue) {
+      fetch(`http://localhost:3000/api/order/${searchValue}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Nếu cần gửi dữ liệu body, thêm nó ở đây
+        // body: JSON.stringify({ /* dữ liệu bạn muốn gửi */ }),
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('API Data:', data);
+          setFilteredOrders(data.orders);
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    } else {
+      console.error('Giá trị tìm kiếm không hợp lệ. Hãy nhập một giá trị hợp lệ.');
+      setFilteredOrders([]);
+    }
+  };
+  
   
   return (
     <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
