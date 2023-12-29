@@ -105,7 +105,7 @@ const manage = () => {
       id: dataArray.length + 1,
       username: "",
       phone: "",
-      role: 1,
+      role: "1",
       password: ""
     };
 
