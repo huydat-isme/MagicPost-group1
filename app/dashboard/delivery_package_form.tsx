@@ -588,7 +588,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       {submissionStatus === 'error' && (
         <div className="mt-4 text-red-600">Đã xảy ra lỗi khi gửi đơn hàng. Vui lòng thử lại.</div>
       )}
-        <button type="submit"  value="Gửi ngay" className="btn btn-primary btn-outline">Gửi ngay</button>
+        <button type="submit"   value="Gửi ngay" className="btn btn-primary btn-outline">Gửi ngay</button>
       
     </div>
   </div>
