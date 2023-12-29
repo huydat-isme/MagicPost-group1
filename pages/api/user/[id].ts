@@ -7,6 +7,6 @@ import { updateUser } from "../../../controllers/UserController";
 // initiate next-connect with error middleware
 const handler = nc({ onError });
 
-handler.put(updateUser);
+handler.post(updateUser);
 
 export default handler;

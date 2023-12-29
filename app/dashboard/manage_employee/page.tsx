@@ -15,7 +15,7 @@ const manage = () => {
 
   const handleEdit = (id: number) => {
     const editedItem = dataArray.find((user) => user.id === id);
-    setEditedData(editedItem);
+    setEditedData({ ...editedItem, id }); 
     setModalIsOpen(true);
     setEditingMode(true);
   };
@@ -34,15 +34,34 @@ const manage = () => {
     fetchData();
   }, []);
 
-  const handleUpdate1 = () => {
-    // Cập nhật dữ liệu trong data
-    const updatedData = data.map((item) =>
-      item.id === editedData.id ? editedData : item
-    );
-    setData(updatedData);
-    setModalIsOpen(false);
-    setEditingMode(false);
+  const handleUpdateApi = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/user/${editedData.id}`, {
+        method: "POST", 
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editedData), // Chuyển đổi đối tượng editedData thành chuỗi JSON để gửi đi
+      });
+  
+      console.log(editedData)
+      if (response.ok) {
+        // Nếu thành công, cập nhật dữ liệu trong state và đóng modal
+        const updatedData = dataArray.map((user) =>
+          user.id === editedData.id ? editedData : user
+        );
+        setData(updatedData);
+        setModalIsOpen(false);
+        setEditingMode(false);
+      } else {
+        console.error("Lỗi khi cập nhật dữ liệu:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+    }
   };
+  
+  
 
   const handleDelete = (id: number | React.SetStateAction<null>) => {
     setDeleteId(id);
@@ -86,7 +105,7 @@ const manage = () => {
     if (addnew) {
       handleSaveNew();
     } else {
-      handleUpdate1();
+      handleUpdateApi();
     }
   };
   
@@ -178,10 +197,9 @@ const manage = () => {
                   <input
                     className="input input-bordered w-full"
                     type="text"
-                    value={editedData.username}
-                    onChange={(e) =>
-                      setEditedData({ ...editedData, name: e.target.value })
-                    }
+                    value={editedData && editedData.username}
+onChange={(e) => setEditedData({ ...editedData, username: e.target.value })}
+
                   />
                 </div>
                 <div>
@@ -191,7 +209,7 @@ const manage = () => {
                   <input
                     className="input input-bordered w-full"
                     type="text"
-                    value={editedData.email}
+                    value={editedData && editedData.email}
                     onChange={(e) =>
                       setEditedData({ ...editedData, email: e.target.value })
                     }
@@ -204,7 +222,7 @@ const manage = () => {
                   <input
                     className="input input-bordered w-full"
                     type="text"
-                    value={editedData.phone}
+                    value={editedData && editedData.phone}
                     onChange={(e) =>
                       setEditedData({ ...editedData, phone: e.target.value })
                     }
@@ -217,7 +235,7 @@ const manage = () => {
                   <input
                     className="input input-bordered w-full "
                     type="text"
-                    value={editedData.workplace}
+                    value={editedData && editedData.workplace}
                     onChange={(e) =>
                       setEditedData({
                         ...editedData,
@@ -229,15 +247,15 @@ const manage = () => {
                 <div>
                   <label className="label">Chức Vụ:</label>
                   <select
-                    value={editedData.role}
+                    value={editedData && editedData.role}
                     onChange={(e) =>
                       setEditedData({ ...editedData, role: e.target.value })
                     }
                     className="input input-bordered w-full"
                   >
-                    <option value="Giám đốc">Giám đốc</option>
-                    <option value="Nhân viên">Nhân viên</option>
-                    <option value="Trưởng phòng">Trưởng phòng</option>
+                    <option value="1">Giám đốc</option>
+                    <option value="2">Nhân viên</option>
+                    <option value="3">Trưởng phòng</option>
                   </select>
                 </div>
 

@@ -116,8 +116,7 @@ const updateUser = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResp
     data: {
       username,
       phone,
-      password,
-      role,
+      role
     },
   });
 
