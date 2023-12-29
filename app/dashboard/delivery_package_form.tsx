@@ -1,6 +1,8 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
+import axios from 'axios';
 
+const host = "https://provinces.open-api.vn/api/";
 interface PackageItem {
     name: string;
     quantity: string;
@@ -9,18 +11,58 @@ interface PackageItem {
   }
 
 export default function DeliveryPackageForm() {
-  const citiesEndpoint = 'http -v https://provinces.open-api.vn/api/ depth==2';
+  
+   
+  const host = 'https://provinces.open-api.vn/api/';
+  const [senderCities, setSenderCities] = useState([]);
+  const [senderDistricts, setSenderDistricts] = useState([]);
+  const [senderWards, setSenderWards] = useState([]);
+  const [receiverCities, setReceiverCities] = useState([]);
+  const [receiverDistricts, setReceiverDistricts] = useState([]);
+  const [receiverWards, setReceiverWards] = useState([]);
 
-// Sử dụng fetch để lấy dữ liệu từ endpoint
-fetch(citiesEndpoint)
-  .then(response => response.json())
-  .then(data => {
-    // Dữ liệu sẽ chứa danh sách tỉnh thành và thành phố
-    console.log(data);
-    // Xử lý dữ liệu ở đây và cập nhật dropdown/select box trong form của bạn
-  })
-  .catch(error => console.error('Error fetching cities:', error));
-    
+  useEffect(() => {
+    // Fetch sender cities
+    axios.get(host + '?depth=1').then((response) => {
+      setSenderCities(response.data);
+    });
+
+    // Fetch receiver cities
+    axios.get(host + '?depth=1').then((response) => {
+      setReceiverCities(response.data);
+    });
+  }, []);
+
+  const handleSenderCityChange = (selectedCityId) => {
+    // Fetch sender districts
+    axios.get(host + `p/${selectedCityId}?depth=2`).then((response) => {
+      setSenderDistricts(response.data.districts);
+    });
+  };
+
+  const handleSenderDistrictChange = (selectedDistrictId) => {
+    // Fetch sender wards
+    axios.get(host + `d/${selectedDistrictId}?depth=2`).then((response) => {
+      setSenderWards(response.data.wards);
+    });
+  };
+
+  const handleReceiverCityChange = (selectedCityId) => {
+    // Fetch receiver districts
+    axios.get(host + `p/${selectedCityId}?depth=2`).then((response) => {
+      setReceiverDistricts(response.data.districts);
+    });
+  };
+
+  const handleReceiverDistrictChange = (selectedDistrictId) => {
+    // Fetch receiver wards
+    axios.get(host + `d/${selectedDistrictId}?depth=2`).then((response) => {
+      setReceiverWards(response.data.wards);
+    });
+  };
+
+
+
   const [items, setItems] = useState<PackageItem[]>([]);
   const [totalMass, setTotalMass] = useState(0);
   const [totalValue, setTotalValue] = useState(0);
@@ -50,369 +92,444 @@ fetch(citiesEndpoint)
     setTotalMass(newTotalMass);
     setTotalValue(newTotalValue);
   };
+  
+
+  
   return (
-    <div
-    className="flex  flex-grow border-4 border-gray-400 border-dashed bg-white rounded mt-4"
-  >
-    {/* Nguời gửi */}
-     <div className="w-2/5 md:w-100 md:max-w-full   ">
-  <div className="p-6 border border-gray-300 sm:rounded-md ">
-  <form>
-  <div className="space-y-12">
-    <div className="border-b border-gray-900/10 pb-12">
-      <h2 className="text-base font-semibold leading-7 text-gray-900">Thông tin người gửi</h2>
+  <form className="flex  flex-grow border-4 border-gray-400 border-dashed bg-white rounded mt-4">
+  {/* Nguời gửi */}
+   <div className="w-2/5 md:w-100 md:max-w-full   ">
+<div className="p-6 border border-gray-300 sm:rounded-md ">
 
-      <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-        <div className="sm:col-span-4">
-          <label htmlFor="full-name" className="block text-sm font-medium leading-6 text-gray-900">
-            Họ và tên
-            <span className="text-red-500">*</span>
-          </label>
-          <div className="mt-2">
-            <input
-              type="text"
-              name="full-name"
-              id="full-name"
-              autoComplete="given-name"
-              required
-              className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-1 sm:text-sm sm:leading-6"
-            />
-          </div>
-        </div>
+<div className="space-y-12">
+  <div className="border-b border-gray-900/10 pb-12">
+    <h2 className="text-base font-semibold leading-7 text-gray-900">Thông tin người gửi</h2>
 
-        <div className="sm:col-span-4">
-          <label htmlFor="phone-number" className="block text-sm font-medium leading-6 text-gray-900">
-            Số điện thoại
-            <span className="text-red-500">*</span>
-          </label>
-          <div className="mt-2">
-            <input
-              id="phone-number"
-              name="phone-number"
-              type="tel"
-              required
-              className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
-          </div>
-        </div>
-
-        <div className="sm:col-span-3">
-          <label htmlFor="city" className="block text-sm font-medium leading-6 text-gray-900">
-            Thành phố
-            <span className="text-red-500">*</span>
-          </label>
-          <div className="mt-2">
-            <select
-              id="city"
-              name="city"
-              autoComplete="address-level2"
-              required
-              className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-            >
-              <option value="">Chọn thành phố</option>
-              <option>United States</option>
-              <option>Canada</option>
-              <option>Mexico</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="sm:col-span-2 sm:col-start-1">
-          <label htmlFor="district" className="block text-sm font-medium leading-6 text-gray-900">
-            Quận/Huyện
-          </label>
+    <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div className="sm:col-span-4">
+        <label htmlFor="full-name" className="block text-sm font-medium leading-6 text-gray-900">
+          Họ và tên
           <span className="text-red-500">*</span>
-          <div className="mt-2">
-            <input
-              type="text"
-              name="district"
-              id="district"
-              required
-              autoComplete="address-level2"
-              className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
-          </div>
+        </label>
+        <div className="mt-2">
+          <input
+            type="text"
+            name="sender_full-name"
+            id="sender_full-name"
+            autoComplete="given-name"
+            required
+            className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-1 sm:text-sm sm:leading-6"
+          />
         </div>
+      </div>
 
-        <div className="sm:col-span-2">
-          <label htmlFor="ward" className="block text-sm font-medium leading-6 text-gray-900">
-            Xã/Phường
-          </label>
+      <div className="sm:col-span-4">
+        <label htmlFor="sender_phone-number" className="block text-sm font-medium leading-6 text-gray-900">
+          Số điện thoại
           <span className="text-red-500">*</span>
-          <div className="mt-2">
-            <input
-              type="text"
-              name="ward"
-              id="ward"
-              required
-              autoComplete="address-level1"
-              className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
-          </div>
+        </label>
+        <div className="mt-2">
+          <input
+            id="sender_phone-number"
+            name="sender_phone-number"
+            type="tel"
+            required
+            className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          />
         </div>
+      </div>
 
-        <div className="sm:col-span-2">
-          <label htmlFor="postal-code" className="block text-sm font-medium leading-6 text-gray-900">
-            Postal code
-          </label>
+      <div className="sm:col-span-3">
+        <label htmlFor="sender_city" className="block text-sm font-medium leading-6 text-gray-900">
+          Thành phố
           <span className="text-red-500">*</span>
-          <div className="mt-2">
-            <input
-              type="text"
-              name="postal-code"
-              id="postal-code"
-              autoComplete="postal-code"
-              required
-              className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
-          </div>
+        </label>
+        <div className="mt-2">
+          <select
+          onChange={(e) => handleSenderCityChange(e.target.value)}
+            id="sender_city"
+            name="sender_city"
+           
+            required
+            
+            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+          >
+              <option value="" selected>
+                    Chọn tỉnh thành
+                  </option>
+                  {senderCities.map((city) => (
+                    <option key={city.code} value={city.code}>
+                      {city.name}
+                    </option>
+                  ))}
+          </select>
         </div>
+      </div>
 
-        <div className="col-span-full">
-          <label htmlFor="street-address" className="block text-sm font-medium leading-6 text-gray-900">
-            Tên Đường
-          </label>
+      <div className="sm:col-span-2 sm:col-start-1">
+        <label htmlFor="sebder_district" className="block text-sm font-medium leading-6 text-gray-900">
+          Quận/Huyện
           <span className="text-red-500">*</span>
-          <div className="mt-2">
-            <input
-              type="text"
-              name="street-address"
-              id="street-address"
-              required
-              autoComplete="street-address"
-              className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
-          </div>
+        </label>
+        
+        <div className="mt-2">
+          <select
+          onChange={(e) => handleSenderDistrictChange(e.target.value)}
+            id="sender_district"
+            name="sender_district"
+           
+            required
+            
+            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+          >
+             <option value="" selected>
+                    Chọn quận huyện
+                  </option>
+                  {senderDistricts.map((district) => (
+                    <option key={district.code} value={district.code}>
+                      {district.name}
+                    </option>
+                  ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="sm:col-span-2">
+        <label htmlFor="sender_ward" className="block text-sm font-medium leading-6 text-gray-900">
+          Xã/Phường
+          <span className="text-red-500">*</span>
+        </label>
+        
+        <div className="mt-2">
+          <select
+          
+            id="sender_ward"
+            name="sender_ward"
+           
+            required
+            
+            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+          >
+            <option value="" selected>
+                    Chọn phường xã
+                  </option>
+                  {senderWards.map((ward) => (
+                    <option key={ward.code} value={ward.name}>
+                      {ward.name}
+                    </option>
+                  ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="sm:col-span-2">
+        <label htmlFor="postal-code" className="block text-sm font-medium leading-6 text-gray-900">
+          Postal code
+        </label>
+        
+        <div className="mt-2">
+          <input
+            type="text"
+            name="sender_postal-code"
+            id="sender_postal-code"
+            autoComplete="postal-code"
+            
+            className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          />
+        </div>
+      </div>
+
+      <div className="col-span-full">
+        <label htmlFor="street-address" className="block text-sm font-medium leading-6 text-gray-900">
+          Tên Đường
+        </label>
+        <span className="text-red-500">*</span>
+        <div className="mt-2">
+          <input
+            type="text"
+            name="sender_street-address"
+            id="sender_street-address"
+            required
+            autoComplete="street-address"
+            className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          />
         </div>
       </div>
     </div>
   </div>
-</form>
-    </div>
+</div>
 
-    {/* Người nhận */}
-    <div className="p-6 border border-gray-300 sm:rounded-md ">
-    <form >
-      <div className="space-y-12 ">
-        
-        <div className="border-b border-gray-900/10 pb-12">
-          <h2 className="text-base font-semibold leading-7 text-gray-900">Thông tin nguời nhận</h2>
-         
+  </div>
 
-         
-          <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-            <div className="sm:col-span-4">
-              <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
-               Họ và tên
-              </label>
-              <div className="mt-2">
-                <input
-                  type="text"
-                  name="first-name"
-                  id="first-name"
-                  autoComplete="given-name"
-                  className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                />
-              </div>
-            </div>
+  {/* Người nhận */}
+  <div className="p-6 border border-gray-300 sm:rounded-md ">
+ 
+    <div className="space-y-12 ">
+      
+      <div className="border-b border-gray-900/10 pb-12">
+        <h2 className="text-base font-semibold leading-7 text-gray-900">Thông tin nguời nhận</h2>
+       
 
-          
-
-            <div className="sm:col-span-4">
-              <label htmlFor="phoneNumber" className="block text-sm font-medium leading-6 text-gray-900">
-                Số điện thoại
-              </label>
-              <div className="mt-2">
-                <input
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  type="phoneNumber"
-                 
-                  className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                />
-              </div>
-            </div>
-  
-            <div className="sm:col-span-3">
-              <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
-                Thành phố
-              </label>
-              <div className="mt-2">
-                <select
-                  id="country"
-                  name="country"
-                  autoComplete="country-name"
-                  className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                >
-                  <option>United States</option>
-                  <option>Canada</option>
-                  <option>Mexico</option>
-                </select>
-              </div>
-            </div>
-
+       
+        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+          <div className="sm:col-span-4">
+            <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
+             Họ và tên<span className="text-red-500">*</span>
+            </label>
             
-
-            <div className="sm:col-span-2 sm:col-start-1">
-              <label htmlFor="district" className="block text-sm font-medium leading-6 text-gray-900">
-                Quận/Huyện
-              </label>
-              <div className="mt-2">
-                <input
-                  type="text"
-                  name="district"
-                  id="district"
-                  autoComplete="address-level2"
-                  className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                />
-              </div>
+            <div className="mt-2">
+              <input
+              required
+                type="text"
+                name="receiver_full-name"
+                id="receiver_full-name"
+                autoComplete="given-name"
+                className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
             </div>
+          </div>
 
-            <div className="sm:col-span-2">
-              <label htmlFor="ward" className="block text-sm font-medium leading-6 text-gray-900">
-                Xã/Phường
-              </label>
-              <div className="mt-2">
-                <input
-                  type="text"
-                  name="ward"
-                  id="ward"
-                  autoComplete="address-level1"
-                  className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                />
-              </div>
+        
+
+          <div className="sm:col-span-4">
+            <label htmlFor="phoneNumber" className="block text-sm font-medium leading-6 text-gray-900">
+              Số điện thoại
+              <span className="text-red-500">*</span>
+            </label>
+            
+            <div className="mt-2">
+              <input
+              required
+                id="receiver_phone-number"
+                name="receiver_phone-number"
+                type="phoneNumber"
+               
+                className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
             </div>
+          </div>
 
-            <div className="sm:col-span-2">
-              <label htmlFor="postal-code" className="block text-sm font-medium leading-6 text-gray-900">
-                Postal code
-              </label>
-              <div className="mt-2">
-                <input
-                  type="text"
-                  name="postal-code"
-                  id="postal-code"
-                  autoComplete="postal-code"
-                  className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                />
-              </div>
+         <div className="sm:col-span-3">
+        <label htmlFor="receiver_city" className="block text-sm font-medium leading-6 text-gray-900">
+          Thành phố
+          <span className="text-red-500">*</span>
+        </label>
+        <div className="mt-2">
+          <select
+         onChange={(e) => handleReceiverCityChange(e.target.value)}
+            id="receiver_city"
+            name="receiver_city"
+           
+            required
+            
+            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+          >
+             <option value="" selected>
+                    Chọn tỉnh thành
+                  </option>
+                  {receiverCities.map((city) => (
+                    <option key={city.code} value={city.code}>
+                      {city.name}
+                    </option>
+                  ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="sm:col-span-2 sm:col-start-1">
+        <label htmlFor="receiver_district" className="block text-sm font-medium leading-6 text-gray-900">
+          Quận/Huyện
+          <span className="text-red-500">*</span>
+        </label>
+        
+        <div className="mt-2">
+          <select
+          onChange={(e) => handleReceiverDistrictChange(e.target.value)}
+            id="receiver_district"
+            name="receiver_district"
+           
+            required
+            
+            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+          >
+              <option value="" selected>
+          Chọn quận huyện
+        </option>
+        {receiverDistricts.map((district) => (
+          <option key={district.code} value={district.code}>
+            {district.name}
+          </option>
+        ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="sm:col-span-2">
+        <label htmlFor="receiver_ward" className="block text-sm font-medium leading-6 text-gray-900">
+          Xã/Phường
+          <span className="text-red-500">*</span>
+        </label>
+        
+        <div className="mt-2">
+          <select
+          
+            id="receiver_ward"
+            name="receiver_ward"
+           
+            required
+            
+            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+          >
+            <option value="" selected>
+          Chọn phường xã
+        </option>
+        {receiverWards.map((ward) => (
+          <option key={ward.code} value={ward.name}>
+            {ward.name}
+          </option>
+        ))}
+          </select>
+        </div>
+      </div>
+
+          <div className="sm:col-span-2">
+            <label htmlFor="postal-code" className="block text-sm font-medium leading-6 text-gray-900">
+              Postal code
+            </label>
+            <div className="mt-2">
+              <input
+                type="text"
+                name="receiver_postal-code"
+                id="receiver_postal-code"
+                autoComplete="postal-code"
+                className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
             </div>
+          </div>
 
-            <div className="col-span-full">
-              <label htmlFor="street-address" className="block text-sm font-medium leading-6 text-gray-900">
-                Tên Đường
-              </label>
-              <div className="mt-2">
-                <input
-                  type="text"
-                  name="street-address"
-                  id="street-address"
-                  autoComplete="street-address"
-                  className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                />
-              </div>
+          <div className="col-span-full">
+            <label htmlFor="street-address" className="block text-sm font-medium leading-6 text-gray-900">
+              Tên Đường
+            </label>
+            <div className="mt-2">
+              <input
+                type="text"
+                name="receiver_street-address"
+                id="receiver_street-address"
+                autoComplete="street-address"
+                className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
             </div>
           </div>
         </div>
       </div>
-
-     
-    </form>
     </div>
 
-    </div>
-    <div className="w-3/5 md:w-100 md:max-w-full">
-    <div className="p-6 border border-gray-300 sm:rounded-md">
-      <form>
-        <div className="space-y-12">
-          <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Thông tin hàng hóa</h2>
+   
+ 
+  </div>
 
-            {items.map((item, index) => (
-              <div key={index} className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                  <div className="sm:col-span-4">
-                    <label htmlFor={`package-name-${index}`} className="block text-sm font-medium leading-6 text-gray-900">
-                      Tên hàng hóa
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        type="text"
-                        name={`package-name-${index}`}
-                        id={`package-name-${index}`}
-                      
-                        className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        value={item.name}
-                        onChange={(e) => handleItemChange(index, 'name', e.target.value)}
-                      />
-                    </div>
-                  </div>
+  </div>
+  <div className="w-3/5 md:w-100 md:max-w-full">
+  <div className="p-6 border border-gray-300 sm:rounded-md">
+  
+      <div className="space-y-12">
+        <div className="border-b border-gray-900/10 pb-12">
+          <h2 className="text-base font-semibold leading-7 text-gray-900">Thông tin hàng hóa</h2>
 
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label htmlFor={`quantity-${index}`} className="block text-sm font-medium leading-6 text-gray-900">
-                      Số lượng
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        type="text"
-                        name={`quantity-${index}`}
-                        id={`quantity-${index}`}
-                        className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        value={item.quantity}
-                        onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label htmlFor={`mass-${index}`} className="block text-sm font-medium leading-6 text-gray-900">
-                      Khối lượng
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        type="text"
-                        name={`mass-${index}`}
-                        id={`mass-${index}`}
-                        autoComplete="address-level1"
-                        className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        value={item.mass}
-                        onChange={(e) => handleItemChange(index, 'mass', e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label htmlFor={`value-${index}`} className="block text-sm font-medium leading-6 text-gray-900">
-                      Giá trị hàng
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        type="text"
-                        name={`value-${index}`}
-                        id={`value-${index}`}
-                        autoComplete="postal-code"
-                        className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        value={item.value}
-                        onChange={(e) => handleItemChange(index, 'value', e.target.value)}
-                      />
-                    </div>
+          {items.map((item, index) => (
+            <div key={index} className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                <div className="sm:col-span-4">
+                  <label htmlFor={`package-name-${index}`} className="block text-sm font-medium leading-6 text-gray-900">
+                    Tên hàng hóa
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <div className="mt-2">
+                    <input
+                      type="text"
+                      required
+                      name={`package-name-${index}`}
+                      id={`package-name-${index}`}
+                    
+                      className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      value={item.name}
+                      onChange={(e) => handleItemChange(index, 'name', e.target.value)}
+                    />
                   </div>
                 </div>
-              ))}
-            </div>
 
-            <button className="btn btn-outline btn-primary" type="button" onClick={addItem}>
-              Thêm mặt hàng mới
-            </button>
+                <div className="sm:col-span-2 sm:col-start-1">
+                  <label htmlFor={`quantity-${index}`} className="block text-sm font-medium leading-6 text-gray-900">
+                    Số lượng
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <div className="mt-2">
+                    <input
+                      type="text"
+                      required
+                      name={`quantity-${index}`}
+                      id={`quantity-${index}`}
+                      className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      value={item.quantity}
+                      onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label htmlFor={`mass-${index}`} className="block text-sm font-medium leading-6 text-gray-900">
+                    Khối lượng (g)
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <div className="mt-2">
+                    <input
+                      type="text"
+                      required
+                      name={`mass-${index}`}
+                      id={`mass-${index}`}
+                      autoComplete="address-level1"
+                      className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      value={item.mass}
+                      onChange={(e) => handleItemChange(index, 'mass', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label htmlFor={`value-${index}`} className="block text-sm font-medium leading-6 text-gray-900">
+                    Giá trị hàng (VNĐ)
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <div className="mt-2">
+                    <input
+                      type="text"
+                      required
+                      name={`value-${index}`}
+                      id={`value-${index}`}
+                      autoComplete="postal-code"
+                      className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      value={item.value}
+                      onChange={(e) => handleItemChange(index, 'value', e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="mt-10">
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Tổng khối lượng hàng: {totalMass}</h2>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Tổng giá trị hàng: {totalValue}</h2>
-          </div>
-          <input type="submit"  value="Gửi ngay" className="btn btn-primary btn-outline"></input>
-        </form>
-      </div>
+
+          <button className="btn btn-outline btn-primary" type="button" onClick={addItem}>
+            Thêm mặt hàng mới
+          </button>
+        </div>
+        <div className="mt-10">
+          <h2 className="text-base font-semibold leading-7 text-gray-900">Tổng khối lượng hàng: {totalMass}</h2>
+          <h2 className="text-base font-semibold leading-7 text-gray-900">Tổng giá trị hàng: {totalValue} VNĐ</h2>
+        </div>
+        <button type="submit"   value="Gửi ngay" className="btn btn-primary btn-outline">Gửi ngay</button>
+      
     </div>
+  </div>
+  </form>
   
-    </div>
-    );
+  );
 }
