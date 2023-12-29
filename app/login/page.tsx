@@ -1,13 +1,22 @@
 "use client";
 import { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 
+
 const newtab = () => {
-    const [userRole, setUserRole] = useState('');
+  
+
+
+const [userRole, setUserRole] = useState('');
 const [username, setUsername] = useState(''); // Thêm state cho username
 const [password, setPassword] = useState(''); // Thêm state cho password
+const [have, setHave] = useState(false);
+
 
 const handleLogin = async () => {
+  
+
   try {
     // Thực hiện yêu cầu POST tới API
     const response = await fetch('api/user/checkuser', {
@@ -24,14 +33,22 @@ const handleLogin = async () => {
 
     // Kiểm tra xem yêu cầu thành công hay không
     if (response.ok) {
+      
+      
       const data = await response.json()
       // Lưu trữ userRole vào localStorage
       localStorage.setItem('role', data.data.user.role);
 
       // Cập nhật state userRole
       setUserRole(data.role);
+      setHave(true);
+
+      
+
+     
     } else {
       console.error('Error checking user:', response.statusText);
+      window.alert("Wrong username or password");
     }
   } catch (error) {
     console.error('Error checking user:', error);
@@ -45,11 +62,11 @@ const handleLogin = async () => {
                 <form className="space-y-4">
                     <div>
                         <label className="label">
-                            <span className="text-base label-text">Email</span>
+                            <span className="text-base label-text">User Name</span>
                         </label>
                         <input
               type="text"
-              placeholder="Email Address"
+              placeholder="Enter username"
               className="w-full input input-bordered"
               onChange={(e) => setUsername(e.target.value)} // Lưu giá trị email từ input
             />
@@ -66,9 +83,11 @@ const handleLogin = async () => {
             />
                     </div>
                     <a href="#" className="text-xs text-gray-600 hover:underline hover:text-blue-600">Forget Password?</a>
+
                     <div>
-                        <Link href='./dashboard'><button className="btn btn-block" onClick={handleLogin}>Login</button></Link>
+                        <Link href={have ? './dashboard' : './login'}><button className="btn btn-block" onClick={handleLogin}>Login</button></Link>
                     </div>
+                    
                 </form>
             </div>
         </div>

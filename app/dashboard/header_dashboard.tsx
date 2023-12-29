@@ -1,9 +1,18 @@
+"use client";
+import { useState } from 'react';
 import { disconnect } from "process";
+import React from 'react';
 
 import Link from 'next/link';
 
 
 export default function Header_dasboard() {
+  const [out, setOut] = useState(false);
+  const handleLogout = () =>{
+    setOut(true);
+
+  };
+
     return (
         
       <aside
@@ -195,7 +204,8 @@ export default function Header_dasboard() {
           </li>
           <li className="my-px">
             <a
-              href="#"
+              href= {out ? '/' : './dashboard'}
+              onClick={handleLogout}
               className="flex flex-row items-center h-10 px-3 rounded-lg text-gray-300 hover:bg-gray-100 hover:text-gray-700"
             >
               <span className="flex items-center justify-center text-lg text-red-400">
@@ -216,6 +226,7 @@ export default function Header_dasboard() {
             </a>
           </li>
         </ul>
+        
       </div>
     </aside>
         
