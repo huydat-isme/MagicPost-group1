@@ -87,7 +87,7 @@ const createOrder = catchAsyncErrors(async (req: NextApiRequest, res: NextApiRes
 
   const order = await prisma.order.create({
     data: {
-      status,
+      status : "PENDING",
       comment,
       sender_name,
       sender_phone,

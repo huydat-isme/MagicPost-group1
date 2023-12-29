@@ -96,18 +96,18 @@ export default function DeliveryPackageForm() {
 // Gửi dữ liệu lên server
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
-  console.log('e.target:', e.target);
+  
 
   const formData = {
     sender_name: e.currentTarget['sender_full-name']?.value || '',
       sender_phone: e.currentTarget['sender_phone-number']?.value || '',
-      sender_location: e.currentTarget['sender_city']?.value || '',
+      sender_location: e.currentTarget['sender_city']?.selectedOptions[0]?.innerText || '',
       receiver_name: e.currentTarget['receiver_full-name']?.value || '',
       receiver_phone: e.currentTarget['receiver_phone_number']?.value || '',
-      receiver_location: e.currentTarget['receiver_city']?.value || '', 
+      receiver_location: e.currentTarget['receiver_city']?.selectedOptions[0]?.innerText  || '', 
    
   };
-
+  console.log(formData);
   try {
     const response = await fetch('/api/order/createorder', {
       method: 'POST',
