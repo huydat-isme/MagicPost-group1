@@ -12,7 +12,7 @@ interface PackageItem {
 
 export default function DeliveryPackageForm() {
   
-   
+  //  Api về các tỉnh thành
   const host = 'https://provinces.open-api.vn/api/';
   const [senderCities, setSenderCities] = useState([]);
   const [senderDistricts, setSenderDistricts] = useState([]);
@@ -62,7 +62,7 @@ export default function DeliveryPackageForm() {
   };
 
 
-
+// Tổng lượng hàng
   const [items, setItems] = useState<PackageItem[]>([]);
   const [totalMass, setTotalMass] = useState(0);
   const [totalValue, setTotalValue] = useState(0);
@@ -93,10 +93,45 @@ export default function DeliveryPackageForm() {
     setTotalValue(newTotalValue);
   };
   
+// Gửi dữ liệu lên server
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  console.log('e.target:', e.target);
+
+  const formData = {
+    sender_name: e.currentTarget['sender_full-name']?.value || '',
+      sender_phone: e.currentTarget['sender_phone-number']?.value || '',
+      sender_location: e.currentTarget['sender_city']?.value || '',
+      receiver_name: e.currentTarget['receiver_full-name']?.value || '',
+      receiver_phone: e.currentTarget['receiver_phone_number']?.value || '',
+      receiver_location: e.currentTarget['receiver_city']?.value || '', 
+   
+  };
+
+  try {
+    const response = await fetch('/api/order/createorder', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Order created successfully:', data);
+    } else {
+      console.error('Failed to create order:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error creating order:', error);
+  }
+};
+
 
   
   return (
-  <form className="flex  flex-grow border-4 border-gray-400 border-dashed bg-white rounded mt-4">
+  <form onSubmit={(e) => handleSubmit(e)} className="flex  flex-grow border-4 border-gray-400 border-dashed bg-white rounded mt-4">
   {/* Nguời gửi */}
    <div className="w-2/5 md:w-100 md:max-w-full   ">
 <div className="p-6 border border-gray-300 sm:rounded-md ">
@@ -132,7 +167,7 @@ export default function DeliveryPackageForm() {
           <input
             id="sender_phone-number"
             name="sender_phone-number"
-            type="tel"
+            type="text"
             required
             className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           />
@@ -522,10 +557,10 @@ export default function DeliveryPackageForm() {
           </button>
         </div>
         <div className="mt-10">
-          <h2 className="text-base font-semibold leading-7 text-gray-900">Tổng khối lượng hàng: {totalMass}</h2>
+          <h2 className="text-base font-semibold leading-7 text-gray-900">Tổng khối lượng hàng: {totalMass} gam</h2>
           <h2 className="text-base font-semibold leading-7 text-gray-900">Tổng giá trị hàng: {totalValue} VNĐ</h2>
         </div>
-        <button type="submit"   value="Gửi ngay" className="btn btn-primary btn-outline">Gửi ngay</button>
+        <button type="submit"  value="Gửi ngay" className="btn btn-primary btn-outline">Gửi ngay</button>
       
     </div>
   </div>
