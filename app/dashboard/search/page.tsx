@@ -22,8 +22,6 @@ export default function SearchPackage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        // Nếu cần gửi dữ liệu body, thêm nó ở đây
-        // body: JSON.stringify({ /* dữ liệu bạn muốn gửi */ }),
       })
         .then(response => {
           if (!response.ok) {
@@ -33,7 +31,14 @@ export default function SearchPackage() {
         })
         .then(data => {
           console.log('API Data:', data);
-          setFilteredOrders(data.orders);
+  
+          if (data.status === 'success' && data.data && data.data.order) {
+            // Nếu có kết quả từ API, cập nhật danh sách đơn hàng
+            setFilteredOrders([data.data.order]);
+          } else {
+            console.error('Không tìm thấy đơn hàng với mã đã nhập.');
+            setFilteredOrders([]);
+          }
         })
         .catch(error => console.error('Error fetching data:', error));
     } else {
@@ -111,10 +116,16 @@ export default function SearchPackage() {
                       Mã đơn hàng
                   </th>
                   <th scope="col" className="px-6 py-3">
+                      Tên gói hàng
+                  </th>
+                  <th scope="col" className="px-6 py-3">
                       Người gửi
                   </th>
                   <th scope="col" className="px-6 py-3">
                       Người nhận
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                      Giá trị đơn hàng
                   </th>
                   <th scope="col" className="px-6 py-3">
                      Trạng thái đơn hàng
@@ -126,8 +137,10 @@ export default function SearchPackage() {
         <tr key={order.order_id} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
           {/* Example columns, adjust as needed */}
           <td className="px-6 py-4">{order.order_id}</td>
+          <td className="px-6 py-4">{order.details[0].package_name}</td>
           <td className="px-6 py-4">{order.sender_name}</td>
           <td className="px-6 py-4">{order.receiver_name}</td>
+          <td className="px-6 py-4">{order.details[0].price}</td>
           <td className="px-6 py-4">{order.status}</td>
           {/* ... (other columns) */}
         </tr>

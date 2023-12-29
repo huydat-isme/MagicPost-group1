@@ -10,40 +10,40 @@ export default function Home() {
   const [orderData, setOrderData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredOrders, setFilteredOrders] = useState([]);
-  useEffect(() => {
-    // Fetch data from the API when the component mounts
-    fetch('/api/order/getall')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('API Data:', data);
-        // Assuming data is structured as { "status": "success", "data": { "orders": [...] } }
-        setOrderData(data.data.orders);
-      })
-      .catch(error => console.error('Error fetching data:', error));
-  }, []); // Empty dependency array ensures the effect runs only once on mount
-  // Click event handler for the search button
   const handleSearchButtonClick = () => {
-  // Perform search logic here
-  const searchValue = parseInt(searchQuery, 10);
-
-  if (!isNaN(searchValue)) {
-    // If searchQuery is a valid integer, filter orders
-    const filteredOrders = orderData.filter(order => order.order_id === searchValue);
-
-    // Set filtered orders to be displayed
-    setFilteredOrders(filteredOrders);
-  } else {
-    // Handle the case where searchQuery is not a valid integer (optional)
-    console.error('Invalid search value. Please enter a valid integer.');
-    // Optionally, you can clear the filtered orders here:
-    setFilteredOrders([]);
-  }
-};
+    const searchValue = searchQuery.trim();
+  
+    if (searchValue) {
+      fetch(`http://localhost:3000/api/order/${searchValue}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('API Data:', data);
+  
+          if (data.status === 'success' && data.data && data.data.order) {
+            // Nếu có kết quả từ API, cập nhật danh sách đơn hàng
+            setFilteredOrders([data.data.order]);
+          } else {
+            console.error('Không tìm thấy đơn hàng với mã đã nhập.');
+            setFilteredOrders([]);
+          }
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    } else {
+      console.error('Giá trị tìm kiếm không hợp lệ. Hãy nhập một giá trị hợp lệ.');
+      setFilteredOrders([]);
+    }
+  };
+  
 
 
   return (
@@ -171,16 +171,23 @@ export default function Home() {
           {filteredOrders.length > 0 &&  (
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-              <tr>
+          <tr>
                   <th scope="col" className="px-6 py-3">
-                      Mã đơn hàng
+                      Tên gói hàng
                   </th>
+                 
                   <th scope="col" className="px-6 py-3">
                       Người gửi
                   </th>
                   <th scope="col" className="px-6 py-3">
                       Người nhận
                   </th>
+                  <th scope="col" className="px-6 py-3">
+                      Giá trị đơn hàng
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                   Khối lượng
+                   </th>
                   <th scope="col" className="px-6 py-3">
                      Trạng thái đơn hàng
                   </th>
@@ -190,9 +197,12 @@ export default function Home() {
       {filteredOrders.map((order) => (
         <tr key={order.order_id} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
           {/* Example columns, adjust as needed */}
-          <td className="px-6 py-4">{order.order_id}</td>
+          <td className="px-6 py-4">{order.details[0].package_name}</td>
+          
           <td className="px-6 py-4">{order.sender_name}</td>
           <td className="px-6 py-4">{order.receiver_name}</td>
+          <td className="px-6 py-4">{order.details[0].weight}</td>
+          <td className="px-6 py-4">{order.details[0].price}</td>
           <td className="px-6 py-4">{order.status}</td>
           {/* ... (other columns) */}
         </tr>

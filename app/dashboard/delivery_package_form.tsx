@@ -71,6 +71,13 @@ export default function DeliveryPackageForm() {
     setItems([...items, { name: '', quantity: '', mass: '', value: '' }]);
   };
 
+  const deleteItem = (index: number) => {
+    const updatedItems = [...items];
+    updatedItems.splice(index, 1);
+    setItems(updatedItems);
+    updateTotals(updatedItems);
+  };
+
   const handleItemChange = (index: number, field: keyof PackageItem, value: string) => {
     const updatedItems = [...items];
     updatedItems[index][field] = value;
@@ -548,6 +555,13 @@ const handleSubmit = async (e: React.FormEvent) => {
                     />
                   </div>
                 </div>
+                <button
+        className="btn btn-outline btn-primary"
+        type="button"
+        onClick={() => deleteItem(index)}
+      >
+        Xóa
+      </button>
               </div>
             ))}
           </div>
