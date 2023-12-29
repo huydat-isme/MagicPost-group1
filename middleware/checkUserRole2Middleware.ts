@@ -6,7 +6,7 @@ const checkUserRoleMiddleware = (func: any) => async (
   res: NextApiResponse,
   next: () => void
 ) => {
-  const userRole = req.headers["role"];
+  const userRole = req.headers["userRole"];
 
   if (userRole === "2" || userRole === "1" ) {
     await func(req, res); // Sử dụng 'await' để đảm bảo middleware hoàn tất trước khi gọi 'next'

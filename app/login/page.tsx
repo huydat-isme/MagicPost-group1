@@ -4,22 +4,39 @@ import Link from 'next/link';
 
 const newtab = () => {
     const [userRole, setUserRole] = useState('');
+const [username, setUsername] = useState(''); // Thêm state cho username
+const [password, setPassword] = useState(''); // Thêm state cho password
 
-    const handleLogin = async () => {
-        try {
-            // Make a request to check the user
-            const response = await fetch('api/user/checkuser');
-            const data = await response.json();
+const handleLogin = async () => {
+  try {
+    // Thực hiện yêu cầu POST tới API
+    const response = await fetch('api/user/checkuser', {
+      method: 'POST', // Sử dụng phương thức POST
+      headers: {
+        'Content-Type': 'application/json', // Thiết lập kiểu dữ liệu gửi đi
+      },
+      // Đặt username và password trong body và chuyển đổi thành JSON
+      body: JSON.stringify({
+        username: username,
+        password: password,
+      }),
+    });
 
-            // Save the user role to localStorage
-            localStorage.setItem('userRole', data.role);
+    // Kiểm tra xem yêu cầu thành công hay không
+    if (response.ok) {
+      const data = await response.json()
+      // Lưu trữ userRole vào localStorage
+      localStorage.setItem('role', data.data.user.role);
 
-            // Update the userRole state
-            setUserRole(data.role);
-        } catch (error) {
-            console.error('Error checking user:', error);
-        }
-    };
+      // Cập nhật state userRole
+      setUserRole(data.role);
+    } else {
+      console.error('Error checking user:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error checking user:', error);
+  }
+};
 
     return (
         <div className="relative flex flex-col justify-center h-screen overflow-hidden">
@@ -30,13 +47,23 @@ const newtab = () => {
                         <label className="label">
                             <span className="text-base label-text">Email</span>
                         </label>
-                        <input type="text" placeholder="Email Address" className="w-full input input-bordered" />
+                        <input
+              type="text"
+              placeholder="Email Address"
+              className="w-full input input-bordered"
+              onChange={(e) => setUsername(e.target.value)} // Lưu giá trị email từ input
+            />
                     </div>
                     <div>
                         <label className="label">
                             <span className="text-base label-text">Password</span>
                         </label>
-                        <input type="password" placeholder="Enter Password" className="w-full input input-bordered" />
+                        <input
+              type="password"
+              placeholder="Enter Password"
+              className="w-full input input-bordered"
+              onChange={(e) => setPassword(e.target.value)} // Lưu giá trị password từ input
+            />
                     </div>
                     <a href="#" className="text-xs text-gray-600 hover:underline hover:text-blue-600">Forget Password?</a>
                     <div>
