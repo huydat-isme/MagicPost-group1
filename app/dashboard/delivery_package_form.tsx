@@ -11,7 +11,7 @@ interface PackageItem {
   }
 
 export default function DeliveryPackageForm() {
-  
+  const [submissionStatus, setSubmissionStatus] = useState(null);
   //  Api về các tỉnh thành
   const host = 'https://provinces.open-api.vn/api/';
   const [senderCities, setSenderCities] = useState([]);
@@ -126,11 +126,19 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     if (response.ok) {
       const data = await response.json();
+      setSubmissionStatus('success');
       console.log('Order created successfully:', data);
+      setItems([]);
+      setTotalMass(0);
+      setTotalValue(0);
+     
+     
     } else {
+      setSubmissionStatus('error');
       console.error('Failed to create order:', response.statusText);
     }
   } catch (error) {
+    setSubmissionStatus('error');
     console.error('Error creating order:', error);
   }
 };
@@ -285,13 +293,13 @@ const handleSubmit = async (e: React.FormEvent) => {
         <label htmlFor="street-address" className="block text-sm font-medium leading-6 text-gray-900">
           Tên Đường
         </label>
-        <span className="text-red-500">*</span>
+        
         <div className="mt-2">
           <input
             type="text"
             name="sender_street-address"
             id="sender_street-address"
-            required
+          
             autoComplete="street-address"
             className="block w-full rounded-md border-0 py-1.5 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           />
@@ -574,6 +582,12 @@ const handleSubmit = async (e: React.FormEvent) => {
           <h2 className="text-base font-semibold leading-7 text-gray-900">Tổng khối lượng hàng: {totalMass} gam</h2>
           <h2 className="text-base font-semibold leading-7 text-gray-900">Tổng giá trị hàng: {totalValue} VNĐ</h2>
         </div>
+        {submissionStatus === 'success' && (
+        <div className="mt-4 text-green-600">Đơn hàng đã được gửi thành công!</div>
+      )}
+      {submissionStatus === 'error' && (
+        <div className="mt-4 text-red-600">Đã xảy ra lỗi khi gửi đơn hàng. Vui lòng thử lại.</div>
+      )}
         <button type="submit"  value="Gửi ngay" className="btn btn-primary btn-outline">Gửi ngay</button>
       
     </div>
