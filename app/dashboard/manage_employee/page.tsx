@@ -6,6 +6,7 @@ import Header_dasboard from "../header_dashboard";
 import Modal from "react-modal";
 
 const manage = () => {
+
   const [dataArray, setData] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [editedData, setEditedData] = useState({});
@@ -15,42 +16,32 @@ const manage = () => {
 
   const handleEdit = (id: number) => {
     const editedItem = dataArray.find((user) => user.id === id);
-    setEditedData({ ...editedItem, id }); 
+    setEditedData(editedItem);
+    console.log(editedData);
     setModalIsOpen(true);
     setEditingMode(true);
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
+
+  const handleDelete = (id: number) => {
+    setDeleteId(id);
+    setModalIsOpen(true);
+    setEditingMode(false);
+  };
+
+
+
+  const confirmDelete = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/user/deleteuser?id=${deleteId}`, {
+        method: "DELETE",
+      });
+
+
+      if (response.ok) {
         const response = await fetch("http://localhost:3000/api/user/getall");
         const apiData = await response.json();
-        const dataArray = Object.values(apiData);
-        setData(dataArray); // Cập nhật state với dữ liệu từ API
-      } catch (error) {
-        console.error("Lỗi khi gọi API:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const handleUpdateApi = async () => {
-    try {
-      const response = await fetch(`http://localhost:3000/api/user/${editedData.id}`, {
-        method: "POST", 
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(editedData), // Chuyển đổi đối tượng editedData thành chuỗi JSON để gửi đi
-      });
-  
-      console.log(editedData)
-      if (response.ok) {
-        // Nếu thành công, cập nhật dữ liệu trong state và đóng modal
-        const updatedData = dataArray.map((user) =>
-          user.id === editedData.id ? editedData : user
-        );
-        setData(updatedData);
+        const data = Object.values(apiData);
+        setData(apiData.data.users);
         setModalIsOpen(false);
         setEditingMode(false);
       } else {
@@ -60,31 +51,61 @@ const manage = () => {
       console.error("Lỗi khi gọi API:", error);
     }
   };
-  
-  
 
-  const handleDelete = (id: number | React.SetStateAction<null>) => {
-    setDeleteId(id);
-    setModalIsOpen(true);
-    setEditingMode(false);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/user/getall");
+        const apiData = await response.json();
+        setData(apiData.data.users); // Cập nhật state với dữ liệu từ API
+      } catch (error) {
+        console.error("Lỗi khi gọi API:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const positionMappings = {
+    1: 'Giám đốc',
+    2: 'Nhân viên',
+    3: 'Trưởng phòng',
   };
 
-  const confirmDelete = () => {
-    // Xóa dữ liệu trong data
-    const updatedData = data.filter((item) => item.id !== deleteId);
-    setData(updatedData);
-    setModalIsOpen(false);
+  const handleUpdateApi = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/user/${editedData.id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editedData), // Chuyển đổi đối tượng editedData thành chuỗi JSON để gửi đi
+      });
+
+      console.log(editedData)
+      if (response.ok) {
+        const response = await fetch("http://localhost:3000/api/user/getall");
+        const apiData = await response.json();
+
+        setData(apiData.data.users);
+        setModalIsOpen(false);
+        setEditingMode(false);
+      } else {
+        console.error("Lỗi khi cập nhật dữ liệu:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+    }
   };
 
   const handleAddNew = () => {
+    console.log(dataArray);
     // Tạo một bản ghi mới (để demo, sử dụng id tăng tự động)
     const newRecord = {
-      id: data.length + 1,
-      name: "",
-      email: "",
+      id: dataArray.length + 1,
+      username: "",
       phone: "",
-      workplace: "",
-      role: "Giám đốc",
+      role: 1
     };
 
     // Mở modal với bản ghi mới
@@ -94,12 +115,35 @@ const manage = () => {
     setEditingMode(true);
   };
 
-  const handleSaveNew = () => {
-    // Thêm bản ghi mới vào data
-    setData([...data, editedData]);
-    setModalIsOpen(false);
-    setEditingMode(false);
+
+  const handleSaveNew = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/user/createuser`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editedData), // Chuyển đổi đối tượng editedData thành chuỗi JSON để gửi đi
+      });
+
+      console.log(editedData)
+      if (response.ok) {
+        // Nếu thành công, cập nhật dữ liệu trong state và đóng modal
+        const response = await fetch("http://localhost:3000/api/user/getall");
+        const apiData = await response.json();
+
+        setData(apiData.data.users);
+        setModalIsOpen(false);
+        setEditingMode(false);
+      } else {
+        console.error("Lỗi khi cập nhật dữ liệu:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+    }
   };
+
+
 
   const handleUpdate = () => {
     if (addnew) {
@@ -108,13 +152,13 @@ const manage = () => {
       handleUpdateApi();
     }
   };
-  
+
 
   return (
     <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
       <Header_dasboard />
-      
-      
+
+
 
 
       <div className="flex flex-grow border-4 border-gray-400 border-dashed bg-white rounded mt-4">
@@ -139,44 +183,40 @@ const manage = () => {
           <table className="min-w-full bg-white border border-gray-300 text-center">
             <thead>
               <tr>
+                <th className="py-2 px-4 border-b">ID</th>
                 <th className="py-2 px-4 border-b">Name</th>
-                <th className="py-2 px-4 border-b">Email</th>
                 <th className="py-2 px-4 border-b">Phone</th>
-                <th className="py-2 px-4 border-b">Workplace</th>
                 <th className="py-2 px-4 border-b">Role</th>
                 <th className="py-2 px-4 border-b"></th>
               </tr>
             </thead>
             <tbody>
               {
-              
-              dataArray && dataArray.length > 1 && dataArray[1] && dataArray[1].users && Array.isArray(dataArray[1].users) && dataArray[1].users.length > 0 && dataArray[1].users
-  .filter(user => Object.keys(user).length > 0) 
-  .map((user) => (
-                
-                <tr key={user.id}>
-                  <td className="py-2 px-4 border-b">{user.username}</td>
-                  <td className="py-2 px-4 border-b"></td>
-                  <td className="py-2 px-4 border-b">{user.phone}</td>
-                  <td className="py-2 px-4 border-b"></td>
-                  <td className="py-2 px-4 border-b">{user.role}</td>
-                  <td className="py-2 px-4 border-b">
-                    <button
-                      className="bg-blue-200 btn btn-xs"
-                      onClick={() => handleEdit(user.id)}
-                    >
-                      Change
-                    </button>
-                    <button
-                      className="bg-red-200 btn btn-xs"
-                      onClick={() => handleDelete(user.id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-                
-              ))}
+
+                dataArray.map((user) => (
+
+                  <tr key={user.id}>
+                    <td className="py-2 px-4 border-b">{user.id}</td>
+                    <td className="py-2 px-4 border-b">{user.username}</td>
+                    <td className="py-2 px-4 border-b">{user.phone}</td>
+                    <td className="py-2 px-4 border-b">{positionMappings[user.role]}</td>
+                    <td className="py-2 px-4 border-b">
+                      <button
+                        className="bg-blue-200 btn btn-xs"
+                        onClick={() => handleEdit(user.id)}
+                      >
+                        Change
+                      </button>
+                      <button
+                        className="bg-red-200 btn btn-xs"
+                        onClick={() => handleDelete(user.id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+
+                ))}
             </tbody>
           </table>
           <Modal
@@ -197,24 +237,12 @@ const manage = () => {
                   <input
                     className="input input-bordered w-full"
                     type="text"
-                    value={editedData && editedData.username}
-onChange={(e) => setEditedData({ ...editedData, username: e.target.value })}
+                    value={editedData.username}
+                    onChange={(e) => setEditedData({ ...editedData, username: e.target.value })}
 
                   />
                 </div>
-                <div>
-                  <label className="label">
-                    <h2>Email:</h2>
-                  </label>
-                  <input
-                    className="input input-bordered w-full"
-                    type="text"
-                    value={editedData && editedData.email}
-                    onChange={(e) =>
-                      setEditedData({ ...editedData, email: e.target.value })
-                    }
-                  />
-                </div>
+
                 <div>
                   <label className="label">
                     <h2>Phone:</h2>
@@ -222,41 +250,25 @@ onChange={(e) => setEditedData({ ...editedData, username: e.target.value })}
                   <input
                     className="input input-bordered w-full"
                     type="text"
-                    value={editedData && editedData.phone}
+                    value={editedData.phone}
                     onChange={(e) =>
                       setEditedData({ ...editedData, phone: e.target.value })
                     }
                   />
                 </div>
+
                 <div>
-                  <label className="label">
-                    <h2>Workplace:</h2>
-                  </label>
-                  <input
-                    className="input input-bordered w-full "
-                    type="text"
-                    value={editedData && editedData.workplace}
-                    onChange={(e) =>
-                      setEditedData({
-                        ...editedData,
-                        workplace: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="label">Chức Vụ:</label>
+                  <label className="label">Role:</label>
                   <select
-                    value={editedData && editedData.role}
-                    onChange={(e) =>
-                      setEditedData({ ...editedData, role: e.target.value })
-                    }
+                    value={editedData.role}
+                    onChange={(e) => setEditedData({ ...editedData, role: e.target.value })}
                     className="input input-bordered w-full"
                   >
                     <option value="1">Giám đốc</option>
                     <option value="2">Nhân viên</option>
                     <option value="3">Trưởng phòng</option>
                   </select>
+
                 </div>
 
                 <div className="modal-action">
