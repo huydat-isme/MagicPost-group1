@@ -33,22 +33,29 @@ const createDistributionPoint = catchAsyncErrors(async (req: NextApiRequest, res
   });
 });
 
-// Hàm để lấy một điểm phân phối cụ thể bằng cách sử dụng id
-const getDistributionPoint = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResponse) => {
-  const { id } = req.query;
-  const distributionPoint = await prisma.distributionPoint.findUnique({
+// Hàm để lấy một điểm phân phối cụ thể bằng cách sử dụng id và bao gồm thông tin từ các bảng liên kết
+const getDistributionPointsByLocationId = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResponse) => {
+  const { locationId } = req.query;
+  
+  const distributionPoints = await prisma.distributionPoint.findMany({
     where: {
-      id: Number(id),
+      distribution_location_id: Number(locationId),
+    },
+    include: {
+      distribution_location: true,
+      distribution_user: true,
+      distribution_order: true,
     },
   });
 
   res.status(200).json({
     status: "success",
     data: {
-      distributionPoint,
+      distributionPoints,
     },
   });
 });
+
 
 // Hàm để cập nhật một điểm phân phối bằng cách sử dụng id
 const updateDistributionPoint = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResponse) => {
@@ -93,7 +100,7 @@ const deleteDistributionPoint = catchAsyncErrors(async (req: NextApiRequest, res
 export {
   getAllDistributionPoints,
   createDistributionPoint,
-  getDistributionPoint,
+  getDistributionPointsByLocationId,
   updateDistributionPoint,
   deleteDistributionPoint,
 };
