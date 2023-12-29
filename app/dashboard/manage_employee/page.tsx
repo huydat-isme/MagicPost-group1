@@ -105,7 +105,8 @@ const manage = () => {
       id: dataArray.length + 1,
       username: "",
       phone: "",
-      role: 1
+      role: 1,
+      password: ""
     };
 
     // Mở modal với bản ghi mới
@@ -253,6 +254,20 @@ const manage = () => {
                     value={editedData.phone}
                     onChange={(e) =>
                       setEditedData({ ...editedData, phone: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div>
+                  <label className="label">
+                    <h2>Password:</h2>
+                  </label>
+                  <input
+                    className="input input-bordered w-full"
+                    type="text"
+                    value={editedData.password}
+                    onChange={(e) =>
+                      setEditedData({ ...editedData, password: e.target.value })
                     }
                   />
                 </div>
