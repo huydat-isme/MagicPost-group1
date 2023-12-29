@@ -21,6 +21,29 @@ const getAllGatheringPoints = catchAsyncErrors(async (req: NextApiRequest, res: 
   });
 });
 
+// Hàm để lấy tất cả các điểm tụ tập với điều kiện gathering_location_id bằng một giá trị cụ thể
+const getGatheringPointsByLocationId = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResponse) => {
+  const { locationId } = req.query;
+
+  const gatheringPoints = await prisma.gatheringPoint.findMany({
+    where: {
+      gathering_location_id: Number(locationId),
+    },
+    include: {
+      gathering_location: true,
+      gathering_user: true,
+      gathering_order: true,
+    },
+  });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      gatheringPoints,
+    },
+  });
+});
+
 // Hàm để tạo một điểm tụ tập mới
 const createGatheringPoint = catchAsyncErrors(async (req: NextApiRequest, res: NextApiResponse) => {
   const { gathering_location_id, gathering_user_id, gathering_order_id } = req.body;
@@ -103,6 +126,7 @@ const deleteGatheringPoint = catchAsyncErrors(async (req: NextApiRequest, res: N
 // Xuất tất cả các hàm để sử dụng trong api/
 export {
   getAllGatheringPoints,
+  getGatheringPointsByLocationId,
   createGatheringPoint,
   getGatheringPoint,
   updateGatheringPoint,
