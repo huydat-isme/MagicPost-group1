@@ -112,11 +112,19 @@ const handleSubmit = async (e: React.FormEvent) => {
       receiver_name: e.currentTarget['receiver_full-name']?.value || '',
       receiver_phone: e.currentTarget['receiver_phone-number']?.value || '',
       receiver_location: e.currentTarget['receiver_city']?.selectedOptions[0]?.innerText  || '', 
-   
   };
-  console.log(formData);
+  const orderDetail = {
+    items: items.map((item) => ({
+      package_name: item.name,
+      quantity: item.quantity,
+      weight: item.mass,
+      value: item.value,
+      order_id : 1
+    })),
+  };
+  console.log(orderDetail)
   try {
-    const response = await fetch('/api/order/createorder', {
+    const orderResponse = await fetch('/api/order/createorder', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -124,23 +132,48 @@ const handleSubmit = async (e: React.FormEvent) => {
       body: JSON.stringify(formData),
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      setSubmissionStatus('success');
-      console.log('Order created successfully:', data);
-      setItems([]);
-      setTotalMass(0);
-      setTotalValue(0);
-     
-     
-    } else {
-      setSubmissionStatus('error');
-      console.error('Failed to create order:', response.statusText);
+    if (!orderResponse.ok) {
+      throw new Error('Failed to create order');
     }
+
+    const orderData = await orderResponse.json();
+    const orderId = orderData.id; // Lấy ID của đơn hàng vừa tạo
+
+    // Gửi thông tin hàng hóa cho từng mục
+    for (const item of items) {
+      const orderDetailData = {
+        package_name: item.name,
+        quantity: parseInt(item.quantity), 
+        weight: parseInt(item.mass), 
+        price: parseInt(item.value), 
+        order_id: orderId,
+      };
+
+      const detailResponse = await fetch('/api/order/createorderdetail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderDetailData),
+      });
+
+      if (!detailResponse.ok) {
+        throw new Error('Failed to create order detail');
+      }
+    }
+
+    // Nếu đến đây mà không có lỗi, hiển thị thông báo thành công
+    setSubmissionStatus('success');
+    console.log('Order created successfully:', orderData);
+    setItems([]);
+    setTotalMass(0);
+    setTotalValue(0);
   } catch (error) {
+    // Xử lý lỗi
     setSubmissionStatus('error');
     console.error('Error creating order:', error);
   }
+
 };
 
 
