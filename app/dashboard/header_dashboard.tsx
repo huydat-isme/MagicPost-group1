@@ -9,8 +9,8 @@ import Link from 'next/link';
 export default function Header_dasboard() {
   const [out, setOut] = useState(false);
   const handleLogout = () =>{
+    localStorage.removeItem('role')
     setOut(true);
-
   };
 
     return (
