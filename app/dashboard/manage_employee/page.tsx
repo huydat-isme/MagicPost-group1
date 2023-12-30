@@ -13,7 +13,7 @@ const manage = () => {
   const [deleteId, setDeleteId] = useState(null);
   const [editingMode, setEditingMode] = useState(false);
   const [addnew, setAddnew] = useState(false);
-
+  const userRole = localStorage.getItem('role');
   const handleEdit = (id: number) => {
     const editedItem = dataArray.find((user) => user.id === id);
     setEditedData(editedItem);
@@ -55,9 +55,20 @@ const manage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/user/getall");
-        const apiData = await response.json();
-        setData(apiData.data.users); // Cập nhật state với dữ liệu từ API
+        if (userRole !== null) {
+          const response = await fetch("http://localhost:3000/api/user/getall", {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'role': userRole, // Thêm giá trị userRole vào headers
+            },
+          });
+  
+          const apiData = await response.json();
+          setData(apiData.data.users); // Cập nhật state với dữ liệu từ API
+        } else {
+          console.error("Lỗi khi đọc giá trị userRole từ localStorage.");
+        }// Cập nhật state với dữ liệu từ API
       } catch (error) {
         console.error("Lỗi khi gọi API:", error);
       }
@@ -65,7 +76,6 @@ const manage = () => {
 
     fetchData();
   }, []);
-
   const positionMappings = {
     1: 'Giám đốc',
     2: 'Nhân viên',

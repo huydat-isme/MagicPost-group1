@@ -110,7 +110,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       sender_phone: e.currentTarget['sender_phone-number']?.value || '',
       sender_location: e.currentTarget['sender_city']?.selectedOptions[0]?.innerText || '',
       receiver_name: e.currentTarget['receiver_full-name']?.value || '',
-      receiver_phone: e.currentTarget['receiver_phone_number']?.value || '',
+      receiver_phone: e.currentTarget['receiver_phone-number']?.value || '',
       receiver_location: e.currentTarget['receiver_city']?.selectedOptions[0]?.innerText  || '', 
    
   };
